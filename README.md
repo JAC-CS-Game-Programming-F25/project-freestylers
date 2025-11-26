@@ -10,54 +10,63 @@
 
 ---
 
-# Sample Proposal - Pokémon the Trading Card Game
+# Sample Proposal - Rooftop Snipers
 
 > [!note]
 > This was taken from a project I did in university so the scope is **much** larger than what I'm expecting from you in terms of number of features!
 
 ## ✒️ Description
 
-In this turn-based battle card game, players assume the role of a Pokémon trainer and use their Pokémon to battle their opponent's Pokémon. Players play Pokémon to the field and attack their opponent's Pokémon. A Pokémon that has sustained enough damage is Knocked Out, and the player who knocked it out draws a Prize card. There are usually six Prize cards, and the primary win condition is to draw all of them. Other ways to win are by knocking out all the Pokémon the opponent has on the field so that the opponent has none left, or if at the beginning of their opponent's turn there are no cards left to draw in the opponent's deck.
+In this 2d platform game, 2 players are positioned on a rooftop with the purpose of knocking the other player off of the platform. Players have access to a random weapon every game (the same random weapon is given to both players). Similarly, random obstacles are generated every round in order to spice the interactions up, whether it is a beach ball (very bounce) or a brick wall (intercepts projectiles). The game is over when a player is knocked out of a rooftop 5 times. 
 
 ## 🕹️ Gameplay
 
-Players begin by having one player select heads or tails, and the other flips a coin; the winner of the coin flip will decide who goes first or second. The player going first cannot attack their first turn, unless the card says otherwise. (Dice may be used in place of coins, with even numbers representing heads and odd numbers representing tails). Players then shuffle their decks and draw seven cards, then play one Basic Pokémon onto the field. This Pokémon is known as the Active Pokémon and is usually the one that attacks and receives damage. If a player does not have any Basic Pokémon, they must shuffle and draw a new hand, and the opponent may draw one additional card. Once both players have at least one Basic Pokémon, they can play up to five more Basic Pokémon onto their "Bench" (representing the maximum-carry limit of six from the video games). Players then take the top six cards of their deck and place them to the side as Prize Cards. Play then begins with the player who won the coin flip.
+Each round start with each player positioned on an extremity of the roof. Players can not walk, instead they are constantly rocking back and forth and need to time their jump in order to go in the direction they want. The weapon mechanic is also unconventional, in order to aim, players need to raise their arm and let go of the trigger when they think the weapon is oriented at the proper angle in order to hit the other player. All weapons are ranged and have different aspects.
+* Bazooka: The projectile coming out of the weapon  has a travel time and is heavier, allowing for more knocking out potential on hit. (If spare time at the end, projectile could have a shockwave that ejects the enemy if they are close enough to where it exploded)
 
-Play alternates between players who may take several actions during their turn, including playing new Basic Pokémon, evolving their Pokémon, playing Trainer cards and Energy cards, and using Pokémon Abilities. A player may also retreat their Active Pokémon, switching the Active Pokémon with one on the Bench. At the end of their turn, a player may use one of their Active Pokémon's attacks, provided the prerequisite amount and types of Energy are attached to that Pokémon. Effects from that attack are then activated and damage may be placed on the Defending Pokémon; some attacks simply have effects but do not do damage. Damage may be modified depending on whether the defender has a weakness or a resistance to the attacker's Pokémon type. If the final damage exceeds the defending Pokémon's HP, it is Knocked Out, and the active player takes a prize card and ends their turn.
+* Handgun: project has no travel time, instant hit but lower weight with less knocking out potential.
 
-This implementation of _Pokémon the Trading Card Game_ is a single player experience with an AI. The game is played primarily with the mouse to interact with the cards and general GUI. The players can optionally hit `M` on their keyboard to mute all game sounds.
+* AK47: Shoots a wave of 3 bullets on release, bullets have a travel time (low), relatively high knocking out potential.
 
-## 📃 Requirements
+* Axe throwing: Very short range, but projectile loses speed very quickly, players need to get close to each others for max effect.
 
-> [!note]
-> This was a web project so that's why you'll see requirements about logging in and uploading data which for you is irrelevant. Focus more on the requirements describing actions taken for gameplay.
+If players get close enough to each others, they could use their own body to push the other player off of the roof.
 
-1. The user shall register to be able to login.
-2. The user shall login to be able to play a game.
-3. The user shall upload a valid deck file.
-4. The user shall upload a valid cards file.
-5. The user shall upload a valid abilities file.
-6. The user shall select which deck they will use in the game.
-7. The user shall select which deck the AI will use in the game.
-8. The system shall "flip a coin" to decide which player goes first.
-9. The system shall shuffle the user's deck.
-10. The system shall draw the top 7 cards from the user's deck.
-11. If the user does not have a Basic Pokémon in their hand the system shall "mulligan" until they do.
-12. Upon each mulligan, the AI shall draw a card.
-13. The user shall put one of their Basic Pokémon face down as their Active Pokémon.
-14. The user shall put up to 5 more Basic Pokémon face down on their Bench.
-15. Upon a new turn, the system shall draw a card from the deck of the current player.
-16. Upon a new turn, the system shall place the drawn card in the hand of the current player.
-17. The user shall put (up to 5 total) Basic Pokémon cards from their hand onto their Bench.
-18. The user shall Evolve their Pokémon as many times as they choose.
-19. The user shall attach an Energy card from their hand to one of their Pokémon once per turn.
-20. The user shall play Trainer cards (as many as they want, but only one Supporter card and one Stadium card per turn).
-21. The user shall Retreat their Active Pokémon once per turn.
-22. The user shall use as many Abilities as they choose.
-23. The user shall attack the opponent's Active Pokémon.
-24. After a player attacks, the system shall end their turn and start their opponent's turn.
-25. The system shall execute any "special conditions" after a turn is over.
-26. The user shall pick a Victory Card when the opposing Active Pokémon dies.
+
+# 📃 Requirements – Rooftop Snipers
+
+1. The system shall load all assets before starting the game.  
+2. The system shall allow the player to start a new match from the main menu.  
+3. The system shall randomly select a weapon for the match.  
+4. The system shall assign the same random weapon to both players.  
+5. The system shall randomly generate 0–2 obstacles at the start of each round.  
+6. The system shall place Player 1 and Player 2 on opposite sides of the rooftop at the start of each round.  
+7. Players shall not be able to walk; they shall rock forward and backward automatically.  
+8. Players shall move horizontally by jumping while rocking.  
+9. The player shall be able to enter an aiming state by holding the shoot button.  
+10. While aiming, the system shall raise the player’s arm over time.  
+11. The projectile shall fire when the shoot button is released.  
+12. Each weapon shall use its own behavior:  
+    - Bazooka: slow, heavy projectile with high knockback  
+    - Handgun: instant hit scan with low knockback  
+    - AK47: fires 3 bullets in a spread  
+    - Axe: short-range projectile that slows quickly  
+13. The system shall apply knockback when a projectile hits a player.  
+14. Knockback strength shall depend on the weapon used.  
+15. The system shall detect collisions between projectiles and players, obstacles, and boundaries.  
+16. The system shall destroy projectiles upon collision.  
+17. The system shall spawn random obstacles such as beach balls or brick walls.  
+18. Obstacles shall have physics behaviors (bounce, block bullets, etc.).  
+19. The system shall regenerate new obstacles each round.  
+20. A player shall lose a round when they fall off the rooftop.  
+21. The opponent’s score shall increase by 1 when this occurs.  
+22. The system shall reset players, weapons, and obstacles at the start of a new round.  
+23. The match shall end when one player reaches 5 knockouts.  
+24. The system shall display a winner screen when the match ends.  
+25. The system shall restart the match when the player chooses “Play Again.”  
+26. The system shall return to the main menu when “Exit” is selected.  
+
+
 
 ### 🤖 State Diagram
 
