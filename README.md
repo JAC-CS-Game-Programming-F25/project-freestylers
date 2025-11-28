@@ -10,14 +10,14 @@
 
 ---
 
-# Sample Proposal - Rooftop Snipers
+# Sample Proposal - Random Shooters
 
 > [!note]
 > This was taken from a project I did in university so the scope is **much** larger than what I'm expecting from you in terms of number of features!
 
 ## ✒️ Description
 
-In this 2d platform game, 2 players are positioned on a rooftop with the purpose of knocking the other player off of the platform. Players have access to a random weapon every game (the same random weapon is given to both players). Similarly, random obstacles are generated every round in order to spice the interactions up, whether it is a beach ball (very bounce) or a brick wall (intercepts projectiles). The game is over when a player is knocked out of a rooftop 5 times. 
+In this 2d platform game, 2 players are positioned on a rooftop with the purpose of knocking the other player off of the platform. Players have access to a random weapon every game (both players get the same random weapon). Similarly, random obstacles are generated every round in order to spice the interactions up, whether it is a beach ball (very bounce) or a brick wall (intercepts projectiles). The game is over when a player is knocked out of a rooftop 5 times. 
 
 ## 🕹️ Gameplay
 
@@ -33,7 +33,7 @@ Each round start with each player positioned on an extremity of the roof. Player
 If players get close enough to each others, they could use their own body to push the other player off of the roof.
 
 
-# 📃 Requirements – Rooftop Snipers
+# 📃 Requirements – Random Shooters
 
 1. The system shall load all assets before starting the game.  
 2. The system shall allow the player to start a new match from the main menu.  
@@ -77,7 +77,7 @@ If players get close enough to each others, they could use their own body to pus
 
 ### 🗺️ Class Diagram
 
-![Class Diagram](./assets/images/ClassDiagram.png)
+![Class Diagram](./assets/images/ClassDiagram_ours.png)
 
 ### 🧵 Wireframes
 
@@ -88,7 +88,7 @@ If players get close enough to each others, they could use their own body to pus
 
 -   _Let's Play_ will navigate to the main game.
 -   _Upload Cards_ will navigation to the forms for uploading and parsing the data files for the game.
--   _Change Log_ will navigate the user to a page with a list of features/changes that have been implemented throughout the development of the game.
+-   _Change Log_ will navigate the user to a page with a list of features/changes that have been implemented throbughout the development of the game.
 
 ![Game Board](./assets/images/Game-Board.png)
 
