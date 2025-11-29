@@ -10,7 +10,7 @@
 
 ---
 
-# Platforn Shooters
+# Platform Shooters
 
 ## ✒️ Description
 
@@ -144,6 +144,14 @@ All sounds were taken from [101soundboards.com](https://www.101soundboards.com/s
 
 We wish to use **matter.js** as our phyics engine for this project similarly to angry birds. As shown in the class diagram, most things are Rectangles or Circles
 
-Juice
+### Juice
 
 We will have particles (explosions) coming out when you release the shoot button as well as tweens between title screens. Please let us know if we also need power ups.
+
+### Power Ups
+
+PowerUps will spawn randmoly during the rounds, the first one maybe a couple seconds into the round. They are circular, each with their own little icon and you collect them by jumping into them. Once you collect them, their effect will last about 10 seconds. An animation will show when the power up is running out. Each power up, will have a slightly different animation to show that it has been collected.
+
+Big Jump Power Up: increases the player's jump height
+Heavy Power Up: increases the player's density making it harder for the opponent to know them off.
+Get Smaller Power Up: decreases the player's dimensions, making him harder to hit.
