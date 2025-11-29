@@ -16,7 +16,7 @@ dont mention sprites, states, tweens/animations, simply mention what is specific
 # Final Project
 
 -   [X] Read the [project requirements](https://vikramsinghmtl.github.io/420-5P6-Game-Programming/project/requirements).
--   [ ] Replace the sample proposal below with the one for your game idea.
+-   [X] Replace the sample proposal below with the one for your game idea.
 -   [ ] Get the proposal greenlit by Vik.
 -   [ ] Place any assets in `assets/` and remember to update `src/config.json`.
 -   [ ] Decide on a height and width inside `src/globals.js`. The height and width will most likely be determined based on the size of the assets you find.
@@ -37,11 +37,12 @@ In this 2d platform game, 2 players are positioned on a rooftop with the purpose
 ## 🕹️ Gameplay
 
 Each round start with each player positioned on an extremity of the roof. Players can not walk, instead they are constantly rocking back and forth and need to time their jump in order to go in the direction they want. The weapon mechanic is also unconventional, in order to aim, players need to raise their arm and let go of the trigger when they think the weapon is oriented at the proper angle in order to hit the other player. All weapons are ranged and have different aspects.
+
 * Bazooka: The projectile coming out of the weapon  has a travel time and is heavier, allowing for more knocking out potential on hit. (If spare time at the end, projectile could have a shockwave that ejects the enemy if they are close enough to where it exploded)
 
 * Handgun: project has no travel time, instant hit but lower weight with less knocking out potential.
 
-* AK47: Shoots a wave of 3 bullets on release, bullets have a travel time (low), relatively high knocking out potential.
+* Lazer: Shoots a lazer beem for a second, relatively high knocking out potential.
 
 * Axe throwing: Very short range, but projectile loses speed very quickly, players need to get close to each others for max effect.
 
@@ -85,9 +86,6 @@ If players get close enough to each others, they could use their own body to pus
 
 ### State Diagram
 
-> [!note]
-> Remember that you'll need diagrams for not only game states but entity states as well.
-
 ![State Diagram](./assets/images/StateDiagram_ours.png)
 
 ### Player State Diagram
@@ -99,54 +97,67 @@ If players get close enough to each others, they could use their own body to pus
 ![Class Diagram](./assets/images/ClassDiagram_ours.png)
 
 ### 🧵 Wireframes
+THe following is a pretty rough decison. The main text is there but the color scheme and fonts are not. We will have some tweening in the navigations between most screens.
 
-> [!note]
-> Your wireframes don't have to be super polished. They can even be black/white and hand drawn. I'm just looking for a rough idea about what you're visualizing.
+![Title Screen](./assets/images/wireframe/TitleScreen.png)
 
-![Main Menu](./assets/images/Main-Menu.png)
+-   _Start Game_ will navigate to the select number of players screen.
 
--   _Let's Play_ will navigate to the main game.
--   _Upload Cards_ will navigation to the forms for uploading and parsing the data files for the game.
--   _Change Log_ will navigate the user to a page with a list of features/changes that have been implemented throbughout the development of the game.
+![Number of Players Screen](./assets/images/wireframe/NbPlayersScreen.png)
 
-![Game Board](./assets/images/Game-Board.png)
+-   _1 Player_ will navigate to the Setup Screen with 1 player selected
+-   _2 Players_ will navigate to the Setup Screen with 2 players selected
 
-We want to keep the GUI as simple and clear as possible by having cards with relevant images to act as a way for the user to intuitively navigate the game. We want to implement a layout that would look like as if one were playing a match of the Pokémon Trading Card Game with physical cards in real life. Clicking on any of the cards will reveal that card's details to the player.
+![Setup Screen](./assets/images/wireframe/SetupScreen.png)
+
+-   _jump w_ will navigate to the Play Screen. The player must click on the jump button to go to the play screen. If the player chose 2 Players then we will see both Jump and Shoot for both players and both players must press the Jump button.
+
+![Play Screen](./assets/images/wireframe/PlayScreen.png)
+
+-   The main gameplay in here, players will have their weapons down initially and will be leaning back and forth. They can jump or shoot. We see the score up there.
+- _Pause_ (at top right in later screens) will navigate to the Pause State. No tweening in this navigation. 
+
+![Pause Screen](./assets/images/wireframe/PauseScreen.png)
+
+-   _Resume_ will navigate back to the Play Screen keeping the current location of players and score. No tween in this navigation.
+- _Exit_ will navigate to the TitleScreen.
+
+![Round Over Screen](./assets/images/wireframe/RoundOverScreen.png)
+
+- When a player falls off he will be stopped at the edge of the screen. The text will be animated into the view and the score will be updated. The text will be on a panel, not just plain text.
+
+![Game Over Screen](./assets/images/wireframe/GameOverScreen.png)
+
+- When a player reachers 5 points the game ends and we see which player won. Pretty Straightforward. There will be a button to exit and a button to restart game similar to the Pause Screen which will navigate you back to the Setup Screen.
 
 ### 🎨 Assets
 
-We used [app.diagrams.net](https://app.diagrams.net/) to create the wireframes. Wireframes are the equivalent to the skeleton of a web app since they are used to describe the functionality of the product and the users experience.
+We used [excalidraw](https://excalidraw.com) to create the wireframes.
 
-We plan on following trends already found in other trading card video games, such as Pokémon Trading Card Game Online, Hearthstone, Magic the Gathering Arena, and Gwent.
-
-The GUI will be kept simple and playful, as to make sure the game is easy to understand what each component does and is, as well as light hearted to keep to the Pokémon theme.
+We plan on following trends already found in other similar friv games. The GUI will be kept simple and playful, as to make sure the game is easy to understand and play.
 
 #### 🖼️ Images
 
--   Most images will be used from the well known community driven wikipedia site, [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Main_Page).
--   Especially their [Trading Card Game section](<https://bulbapedia.bulbagarden.net/wiki/Full_Art_card_(TCG)>).
+Most images will be used from the following tilesets:
 
-https://craftpix.net/freebies/free-guns-pack-2-for-main-characters-pixel-art/
-https://craftpix.net/freebies/free-industrial-zone-tileset-pixel-art/
+- [Characters](https://craftpix.net/freebies/free-guns-pack-2-for-main-characters-pixel-art/)
+- [Map](https://craftpix.net/freebies/free-industrial-zone-tileset-pixel-art/)
 
 #### ✏️ Fonts
 
 fonts gonna come from the tileset downloaded
 
-For fonts, a simple sans-serif like Roboto will look quite nice. It's a font that is legible, light on storage size, and fun to keep with the theme we're going for. We also used a more cartoonish Pokemon font for the title screen.
+For fonts, a simple sans-serif like Roboto will look quite nice. It's a font that is legible, light on storage size, and fun to keep with the theme we're going for. We also used a more futuristic font for the title screen, so we will be using the font that is provided in the tileset.
 
 -   [Titles Font](https://www.dafont.com/futuremillennium.font)
 -   [Roboto](https://fonts.google.com/specimen/Roboto)
 
 #### 🔊 Sounds
 
-All sounds were taken from [freesound.org](https://freesound.org) for the actions pertaining to cards.
+All sounds were taken from [101soundboards.com](https://www.101soundboards.com/sounds/) for the actions and effects.
 
-https://www.101soundboards.com/sounds/1531023-bazooka
-
--   [Shuffle cards](https://freesound.org/people/VKProduktion/sounds/217502/)
--   [Flip card](https://freesound.org/people/Splashdust/sounds/84322/)
+-   [Bazooka Sound effect](https://www.101soundboards.com/sounds/1531023-bazooka)
 
 ### 📚 Physics Engine
 
-We wish to use matter.js as our phyics engine for this project similarly to angry birds. As shown in the class diagram, most things are Rectangles or Circles
+We wish to use **matter.js** as our phyics engine for this project similarly to angry birds. As shown in the class diagram, most things are Rectangles or Circles
