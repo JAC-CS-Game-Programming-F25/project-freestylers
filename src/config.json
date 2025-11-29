@@ -11,6 +11,7 @@
 			"path": "./assets/sounds/backgroundmusic1.wav",
 			"size": 1,
 			"volume": 0.5,
+			"playbackRate": 1.5,
 			"loop": true
 		}
 	]
