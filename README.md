@@ -1,6 +1,21 @@
+notes from feedback
+wants classes with inheritence and polymorphism + factory
+weapon, bullet, power ups?, objects
+
+persistence
+localStorage, when you hit refresh you must get back to exactly where you were
+
+juice
+particles from weapon, bullets, power ups + tweens between title screens
+
+class diagram
+dont mention sprites, states, tweens/animations, simply mention what is specific of your codebase
+
+
+
 # Final Project
 
--   [ ] Read the [project requirements](https://vikramsinghmtl.github.io/420-5P6-Game-Programming/project/requirements).
+-   [X] Read the [project requirements](https://vikramsinghmtl.github.io/420-5P6-Game-Programming/project/requirements).
 -   [ ] Replace the sample proposal below with the one for your game idea.
 -   [ ] Get the proposal greenlit by Vik.
 -   [ ] Place any assets in `assets/` and remember to update `src/config.json`.
@@ -10,7 +25,7 @@
 
 ---
 
-# Sample Proposal - Random Shooters
+# Platforn Shooters
 
 > [!note]
 > This was taken from a project I did in university so the scope is **much** larger than what I'm expecting from you in terms of number of features!
@@ -33,7 +48,7 @@ Each round start with each player positioned on an extremity of the roof. Player
 If players get close enough to each others, they could use their own body to push the other player off of the roof.
 
 
-# 📃 Requirements – Random Shooters
+# 📃 Requirements – Platform Shooters
 
 1. The system shall load all assets before starting the game.  
 2. The system shall allow the player to start a new match from the main menu.  
@@ -68,12 +83,16 @@ If players get close enough to each others, they could use their own body to pus
 
 
 
-### 🤖 State Diagram
+### State Diagram
 
 > [!note]
 > Remember that you'll need diagrams for not only game states but entity states as well.
 
-![State Diagram](./assets/images/StateDiagram.png)
+![State Diagram](./assets/images/StateDiagram_ours.png)
+
+### Player State Diagram
+
+![Player State Diagram](./assets/images/PlayerStateDiagram.png)
 
 ### 🗺️ Class Diagram
 
@@ -107,20 +126,27 @@ The GUI will be kept simple and playful, as to make sure the game is easy to und
 -   Most images will be used from the well known community driven wikipedia site, [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Main_Page).
 -   Especially their [Trading Card Game section](<https://bulbapedia.bulbagarden.net/wiki/Full_Art_card_(TCG)>).
 
+https://craftpix.net/freebies/free-guns-pack-2-for-main-characters-pixel-art/
+https://craftpix.net/freebies/free-industrial-zone-tileset-pixel-art/
+
 #### ✏️ Fonts
+
+fonts gonna come from the tileset downloaded
 
 For fonts, a simple sans-serif like Roboto will look quite nice. It's a font that is legible, light on storage size, and fun to keep with the theme we're going for. We also used a more cartoonish Pokemon font for the title screen.
 
--   [Pokemon](https://www.dafont.com/pokemon.font)
+-   [Titles Font](https://www.dafont.com/futuremillennium.font)
 -   [Roboto](https://fonts.google.com/specimen/Roboto)
 
 #### 🔊 Sounds
 
 All sounds were taken from [freesound.org](https://freesound.org) for the actions pertaining to cards.
 
+https://www.101soundboards.com/sounds/1531023-bazooka
+
 -   [Shuffle cards](https://freesound.org/people/VKProduktion/sounds/217502/)
 -   [Flip card](https://freesound.org/people/Splashdust/sounds/84322/)
 
-### 📚 References
+### 📚 Physics Engine
 
--   [Pokemon Rulebook](http://assets.pokemon.com/assets/cms2/pdf/trading-card-game/rulebook/xy8-rulebook-en.pdf)
+We wish to use matter.js as our phyics engine for this project similarly to angry birds. As shown in the class diagram, most things are Rectangles or Circles
