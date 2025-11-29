@@ -124,3 +124,15 @@ All sounds were taken from [freesound.org](https://freesound.org) for the action
 ### 📚 References
 
 -   [Pokemon Rulebook](http://assets.pokemon.com/assets/cms2/pdf/trading-card-game/rulebook/xy8-rulebook-en.pdf)
+
+
+License
+https://craftpix.net/file-licenses/
+
+
+
+music
+Attribution Code
+"Crusade - Heavy Industry" Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 4.0 License
+http://creativecommons.org/licenses/by/4.0
