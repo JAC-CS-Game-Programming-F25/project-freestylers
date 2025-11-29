@@ -1,18 +1,3 @@
-notes from feedback
-wants classes with inheritence and polymorphism + factory
-weapon, bullet, power ups?, objects
-
-persistence
-localStorage, when you hit refresh you must get back to exactly where you were
-
-juice
-particles from weapon, bullets, power ups + tweens between title screens
-
-class diagram
-dont mention sprites, states, tweens/animations, simply mention what is specific of your codebase
-
-
-
 # Final Project
 
 -   [X] Read the [project requirements](https://vikramsinghmtl.github.io/420-5P6-Game-Programming/project/requirements).
@@ -26,9 +11,6 @@ dont mention sprites, states, tweens/animations, simply mention what is specific
 ---
 
 # Platforn Shooters
-
-> [!note]
-> This was taken from a project I did in university so the scope is **much** larger than what I'm expecting from you in terms of number of features!
 
 ## ✒️ Description
 
@@ -161,3 +143,7 @@ All sounds were taken from [101soundboards.com](https://www.101soundboards.com/s
 ### 📚 Physics Engine
 
 We wish to use **matter.js** as our phyics engine for this project similarly to angry birds. As shown in the class diagram, most things are Rectangles or Circles
+
+Juice
+
+We will have particles (explosions) coming out when you release the shoot button as well as tweens between title screens. Please let us know if we also need power ups.
