@@ -32,3 +32,7 @@ export const stateMachine = new StateMachine();
 export const timer = new Timer();
 export const input = new Input(canvas);
 export const sounds = new Sounds();
+
+export const matter = Matter;
+export const engine = Matter.Engine.create();
+export const world = engine.world;

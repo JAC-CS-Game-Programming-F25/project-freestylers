@@ -1,46 +1,62 @@
 import State from '../../lib/State.js';
 import TiledMap from '../objects/TiledMap.js';
+import CharacterFactory from '../services/CharacterFactory.js';
 import SoundName from '../enums/SoundName.js';
-import { context, CANVAS_WIDTH, CANVAS_HEIGHT, sounds } from '../globals.js';
+import Input from '../../lib/Input.js';
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input } from '../globals.js';
+
+const { Engine } = matter;
 
 export default class PlayState extends State {
     constructor() {
         super();
         this.map = null;
+        this.player1 = null;
+        this.player2 = null;
     }
 
     async enter() {
-    // Load the map JSON
-    const mapData = await fetch('./assets/maps/map.json')
-        .then(response => response.json());
-    
-    this.map = new TiledMap(mapData);
-    
-    // Preload all tile images
-    await this.map.preloadTiles();
-    
-    console.log('Map loaded and ready!');
-    
-    // Debug: Check if sound loaded
-    console.log('Available sounds:', sounds.sounds);
-    console.log('Looking for:', SoundName.BackgroundMusic);
-    
-    // Play background music on loop
-    sounds.play(SoundName.BackgroundMusic);
-}
+        // Play background music
+        sounds.play(SoundName.BackgroundMusic);
+        
+        // Load the map
+        const mapData = await fetch('./assets/maps/map.json')
+            .then(response => response.json());
+        
+        this.map = new TiledMap(mapData);
+        await this.map.preloadTiles();
+        
+        this.player1 = CharacterFactory.createCyborg(150, 130, world);
+        
+        this.player2 = CharacterFactory.createPunk(CANVAS_WIDTH - 150, 130, world);
+        
+        console.log('Game ready! Player 1: W to jump, Player 2: UP ARROW to jump');
+    }
 
     update(dt) {
-        // Game logic will go here later
+        Engine.update(engine);
+        
+        if (this.player1) this.player1.update(dt);
+        if (this.player2) this.player2.update(dt);
+        
+        if (input.isKeyPressed(Input.KEYS.W)) {
+            this.player1.jump();
+        }
+        
+        if (input.isKeyPressed(Input.KEYS.ARROW_UP)) {
+            this.player2.jump();
+        }
     }
 
     render() {
-        // Clear with sky blue background
         context.fillStyle = '#87CEEB';
         context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         
-        // Render the map
         if (this.map) {
             this.map.render();
         }
+        
+        if (this.player1) this.player1.render();
+        if (this.player2) this.player2.render();
     }
 }

@@ -1,4 +1,6 @@
-import { context } from '../globals.js';
+import { context, matter, world } from '../globals.js';
+
+const { Bodies, World } = matter;
 
 export default class TiledMap {
     constructor(mapData) {
@@ -8,7 +10,8 @@ export default class TiledMap {
         this.tileHeight = mapData.tileheight;
         this.layers = mapData.layers;
         this.tileImages = {};
-        this.layerImages = {}; // For image layers
+        this.layerImages = {};
+        this.collisionBodies = []; // Store platform collision bodies
     }
 
     async loadTileImage(tileId) {
@@ -32,16 +35,11 @@ export default class TiledMap {
         }
     }
 
-    /**
-     * Load an image layer's image
-     */
     async loadImageLayer(layer) {
         if (!layer.image) return;
         
-        // Fix the path from Downloads to project folder
         let imagePath = layer.image;
         
-        // If path contains Downloads, replace with correct project path
         if (imagePath.includes('Downloads')) {
             imagePath = './assets/images/industrialimages/tiles/2 Background/Background.png';
         }
@@ -111,7 +109,48 @@ export default class TiledMap {
         const tilePromises = Array.from(tileIds).map(id => this.loadTileImage(id));
         await Promise.all([...tilePromises, ...imageLayerPromises]);
         
+        // Create collision bodies for the "physical" layer
+        this.createCollisionBodies();
+        
         console.log(`Loaded ${tileIds.size} unique tiles and ${imageLayerPromises.length} image layers`);
+    }
+
+    /**
+     * Create static Matter.js bodies for platform tiles
+     */
+    createCollisionBodies() {
+        for (const layer of this.layers) {
+            // Only create collision for the "physical" layer
+            if (layer.type === 'tilelayer' && layer.name === 'physical' && layer.data) {
+                const data = layer.data;
+                
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        const index = y * this.width + x;
+                        const tileId = data[index];
+                        
+                        // If there's a tile here, create a collision body
+                        if (tileId > 0) {
+                            const body = Bodies.rectangle(
+                                x * this.tileWidth + this.tileWidth / 2,
+                                y * this.tileHeight + this.tileHeight / 2,
+                                this.tileWidth,
+                                this.tileHeight,
+                                {
+                                    isStatic: true, // Platforms don't move
+                                    label: 'platform'
+                                }
+                            );
+                            
+                            World.add(world, body);
+                            this.collisionBodies.push(body);
+                        }
+                    }
+                }
+                
+                console.log(`Created ${this.collisionBodies.length} platform collision bodies`);
+            }
+        }
     }
 
     render() {
@@ -130,7 +169,6 @@ export default class TiledMap {
         const img = this.layerImages[layer.id];
         if (!img) return;
         
-        // Tile the background across the entire canvas
         const canvasWidth = this.width * this.tileWidth;
         const canvasHeight = this.height * this.tileHeight;
         
@@ -163,5 +201,15 @@ export default class TiledMap {
                 }
             }
         }
+    }
+
+    /**
+     * Clean up - remove collision bodies from world
+     */
+    destroy() {
+        this.collisionBodies.forEach(body => {
+            World.remove(world, body);
+        });
+        this.collisionBodies = [];
     }
 }
