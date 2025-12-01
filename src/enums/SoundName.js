@@ -1,6 +1,7 @@
 
 const SoundName = {
-	BackgroundMusic: 'background-music',  // This needs to match config.json exactly!
+	BackgroundMusic: 'background-music', 
+	EpicBackgroundMusic: 'epic_background-music'
 };
 
 export default SoundName

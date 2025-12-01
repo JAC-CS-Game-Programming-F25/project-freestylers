@@ -13,6 +13,14 @@
 			"volume": 0.5,
 			"playbackRate": 1.5,
 			"loop": true
+		},
+		{
+			"name": "epic_background-music",
+			"path": "./assets/sounds/epic_background_music.wav",
+			"size": 1,
+			"volume": 0.5,
+			"playbackRate": 1,
+			"loop": true
 		}
 	]
 }

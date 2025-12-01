@@ -17,7 +17,7 @@ export default class PlayState extends State {
 
     async enter() {
         // Play background music
-        sounds.play(SoundName.BackgroundMusic);
+        sounds.play(SoundName.EpicBackgroundMusic);
         
         // Load the map
         const mapData = await fetch('./assets/maps/map.json')
