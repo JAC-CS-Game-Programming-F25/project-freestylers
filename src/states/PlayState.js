@@ -48,15 +48,29 @@ export default class PlayState extends State {
         }
     }
 
-    render() {
-        context.fillStyle = '#87CEEB';
-        context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        
-        if (this.map) {
-            this.map.render();
+   render() {
+    context.fillStyle = '#87CEEB';
+    context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    if (this.map) {
+        this.map.render();
+
+        // DEBUG: draw platform hitboxes
+        context.strokeStyle = "rgba(255,0,0,0.5)";
+        context.lineWidth = 1;
+
+        for (const b of this.map.collisionBodies) {
+            context.strokeRect(
+                b.position.x - this.map.tileWidth / 2,
+                b.position.y - this.map.tileHeight / 2,
+                this.map.tileWidth,
+                this.map.tileHeight
+            );
         }
-        
-        if (this.player1) this.player1.render();
-        if (this.player2) this.player2.render();
     }
+
+    if (this.player1) this.player1.render();
+    if (this.player2) this.player2.render();
+}
+
 }
