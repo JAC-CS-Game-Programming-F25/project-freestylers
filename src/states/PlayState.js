@@ -14,6 +14,7 @@ export default class PlayState extends State {
         this.map = null;
         this.player1 = null;
         this.player2 = null;
+        this.obstacles = [];
     }
 
     async enter() {
@@ -30,13 +31,17 @@ export default class PlayState extends State {
         this.player1 = CharacterFactory.createCyborg(150, 130, world);
         
         this.player2 = CharacterFactory.createPunk(CANVAS_WIDTH - 150, 130, world);
+
+        
         
         console.log('Game ready! Player 1: W to jump, Player 2: UP ARROW to jump');
     }
 
     update(dt) {
         Engine.update(engine);
-        
+        if(Math.random()<0.01){
+            this.generateObstacle()
+        }
         if (this.player1) this.player1.update(dt);
         if (this.player2) this.player2.update(dt);
         
@@ -73,5 +78,15 @@ export default class PlayState extends State {
     if (this.player1) this.player1.render();
     if (this.player2) this.player2.render();
 }
+
+    generateObstacle(){
+         x = Math.random() * CANVAS_WIDTH;
+         y = -80
+
+         const obstacle = ObstacleFactory.createRandom(x,y)
+         this.obstacles.push(obstacle)
+         matter.World.add(world, obstacle.body);
+
+    }
 
 }
