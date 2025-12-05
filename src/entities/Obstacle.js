@@ -7,9 +7,10 @@ export default class Obstacle extends Rectangle {
     constructor(x, y, width, height, imageName) {
     try {
         super(x, y, width, height, {
-            density: 0.001,
+            density: 0.000000000000000000001,
             friction: 0.5,
             restitution: 0.3,
+            frictionAir: 0.05,
             label: 'obstacle'
         });
         
