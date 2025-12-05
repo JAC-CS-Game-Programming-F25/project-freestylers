@@ -1,5 +1,8 @@
 {
 	"images": [
+		{ "name": "barrel", "path": "./assets/images/IndustrialImages/tiles/Objects/Barrel1.png" },
+		{ "name": "box", "path": "./assets/images/IndustrialImages/tiles/Objects/Box1.png" }
+
 
 	],
 	"fonts": [

@@ -1,6 +1,7 @@
 import State from '../../lib/State.js';
 import TiledMap from '../objects/TiledMap.js';
 import CharacterFactory from '../services/CharacterFactory.js';
+import ObstacleFactory from '../services/ObstacleFactory.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
 import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input } from '../globals.js';
