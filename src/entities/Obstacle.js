@@ -1,18 +1,38 @@
 import Rectangle from './Rectangle.js';
-import { context } from '../globals.js';
+import Sprite from '../../lib/Sprite.js';
+import ImageName from '../enums/ImageName.js';
+import { world, images, context } from '../globals.js';
 
 export default class Obstacle extends Rectangle {
-    constructor(x, y, width, height, sprite) {
+    constructor(x, y, width, height, imageName) {
+    try {
         super(x, y, width, height, {
             density: 0.001,
             friction: 0.5,
             restitution: 0.3,
             label: 'obstacle'
         });
-
-        this.sprite = sprite;
-        this.renderOffset = { x: -width / 2, y: -height / 2 };
+        
+        console.log('Super call succeeded');
+        console.log('Creating obstacle with imageName:', imageName);
+        console.log('Image from images.get():', images.get(imageName));
+        
+        this.sprites = [
+            new Sprite(
+                images.get(imageName),
+                0, 0,
+                width,
+                height
+            )
+        ];
+        
+        console.log('Sprites created:', this.sprites);
+        this.currentFrame = 0;
+    } catch(error) {
+        console.error('Error in Obstacle constructor:', error);
+        throw error;
     }
+}
 
     render() {
         super.render();

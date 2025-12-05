@@ -1,10 +1,30 @@
 {
 	"images": [
-		{ "name": "barrel", "path": "./assets/images/IndustrialImages/tiles/Objects/Barrel1.png" },
-		{ "name": "box", "path": "./assets/images/IndustrialImages/tiles/Objects/Box1.png" }
-
-
-	],
+	{
+		"name": "punk-idle",
+		"path": "./assets/images/Characters/Punk/Walk1.png",
+		"width": 288,
+		"height": 48
+	},
+	{
+		"name": "cyborg-idle",
+		"path": "./assets/images/Characters/Cyborg/Walk1.png",
+		"width": 288,
+		"height": 48
+	},
+		{
+		"name": "barrel",
+		"path": "./assets/images/IndustrialImages/tiles/Objects/Barrel1.png",
+		"width": 18,
+		"height": 26
+	},
+	{
+		"name": "box",
+		"path": "./assets/images/IndustrialImages/tiles/Objects/Box3.png",
+		"width": 36,
+		"height": 36
+	}
+],
 	"fonts": [
 
 	],

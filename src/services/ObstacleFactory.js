@@ -1,16 +1,14 @@
-import { images } from '../globals.js';
-import Obstacle from '../entities/Obstacle.js';
+import ImageName from "../enums/ImageName.js";
+import Obstacle from "../entities/Obstacle.js";
 
 export default class ObstacleFactory {
 
     static createBarrel(x, y) {
-        const sprite = images.get("barrel");  // <-- use images, not loader
-        return new Obstacle(x, y, 48, 48, sprite);
+        return new Obstacle(x, y, 18, 26, ImageName.Barrel);
     }
 
     static createBox(x, y) {
-        const sprite = images.get("box");
-        return new Obstacle(x, y, 48, 48, sprite);
+        return new Obstacle(x, y, 36, 36, ImageName.Box);
     }
 
     static createRandom(x, y) {

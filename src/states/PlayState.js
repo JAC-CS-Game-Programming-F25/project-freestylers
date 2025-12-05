@@ -4,7 +4,7 @@ import CharacterFactory from '../services/CharacterFactory.js';
 import ObstacleFactory from '../services/ObstacleFactory.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
-import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input } from '../globals.js';
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images } from '../globals.js';
 
 const { Engine } = matter;
 
@@ -18,6 +18,7 @@ export default class PlayState extends State {
     }
 
     async enter() {
+        console.log('Available images:', Object.keys(images.images));
         // Play background music
         sounds.play(SoundName.EpicBackgroundMusic);
         
@@ -40,8 +41,14 @@ export default class PlayState extends State {
     update(dt) {
         Engine.update(engine);
         if(Math.random()<0.01){
+
+            console.log("Chance hit, about to generate obstacle");
             this.generateObstacle()
         }
+        for (const obstacle of this.obstacles) {
+            obstacle.update(dt);
+        }
+
         if (this.player1) this.player1.update(dt);
         if (this.player2) this.player2.update(dt);
         
@@ -77,16 +84,22 @@ export default class PlayState extends State {
 
     if (this.player1) this.player1.render();
     if (this.player2) this.player2.render();
+    for (const obstacle of this.obstacles) {
+    obstacle.render();
+    }
+
 }
 
     generateObstacle(){
-         x = Math.random() * CANVAS_WIDTH;
-         y = -80
+    console.log("generateObstacle called");
+    const x = Math.random() * CANVAS_WIDTH;
+    const y = -80;
 
-         const obstacle = ObstacleFactory.createRandom(x,y)
-         this.obstacles.push(obstacle)
-         matter.World.add(world, obstacle.body);
-
-    }
-
+    const obstacle = ObstacleFactory.createRandom(x, y);
+    console.log("Obstacle created:", obstacle);
+    console.log("Obstacle sprites:", obstacle.sprites);
+    
+    this.obstacles.push(obstacle);
+    matter.World.add(world, obstacle.body);
+}
 }
