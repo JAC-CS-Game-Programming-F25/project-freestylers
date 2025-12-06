@@ -1,4 +1,6 @@
 import Character from './Character.js';
+import ImageName from '../enums/ImageName.js';
+import { images } from '../globals.js';
 
 export default class Punk extends Character {
     static WIDTH = 48;
@@ -14,35 +16,34 @@ export default class Punk extends Character {
         const sprite = Punk.loadSprite();
         const sprites = {
             idle: sprite,
+            arm: images.get(ImageName.PunkHand)
         };
         
         super(x, y, Punk.WIDTH, Punk.HEIGHT, sprites, world);
         
         // Flag to flip rendering
         this.flipped = true;
+        // REMOVED: this.armOffsetX = -2; ← Delete this line!
     }
 
     static loadSprite() {
-        const img = new Image();
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
         canvas.width = Punk.SPRITE_WIDTH;
         canvas.height = Punk.SPRITE_HEIGHT;
         
-        img.src = './assets/images/Characters/Punk/Walk1.png';
+        const spriteSheet = images.get(ImageName.PunkIdle);
         
-        img.onload = () => {
-            ctx.translate(Punk.SPRITE_WIDTH, 0);
-            ctx.scale(-1, 1);
-            
-            // Extract the 5th frame from sprite sheet (flipped)
-            ctx.drawImage(
-                img,
-                Punk.SPRITE_X, Punk.SPRITE_Y, Punk.SPRITE_WIDTH, Punk.SPRITE_HEIGHT,
-                0, 0, Punk.SPRITE_WIDTH, Punk.SPRITE_HEIGHT
-            );
-        };
+        ctx.translate(Punk.SPRITE_WIDTH, 0);
+        ctx.scale(-1, 1);
+        
+        // Extract the 5th frame from sprite sheet (flipped)
+        ctx.drawImage(
+            spriteSheet.image,
+            Punk.SPRITE_X, Punk.SPRITE_Y, Punk.SPRITE_WIDTH, Punk.SPRITE_HEIGHT,
+            0, 0, Punk.SPRITE_WIDTH, Punk.SPRITE_HEIGHT
+        );
         
         return canvas;
     }

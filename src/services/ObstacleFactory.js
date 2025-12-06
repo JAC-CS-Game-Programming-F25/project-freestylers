@@ -8,7 +8,7 @@ export default class ObstacleFactory {
     }
 
     static createBox(x, y) {
-        return new Obstacle(x, y, 36, 36, ImageName.Box);
+        return new Obstacle(x, y, 32, 32, ImageName.Box);
     }
 
     static createRandom(x, y) {

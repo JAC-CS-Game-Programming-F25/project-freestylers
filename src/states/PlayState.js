@@ -5,6 +5,7 @@ import ObstacleFactory from '../services/ObstacleFactory.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
 import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images } from '../globals.js';
+import ImageName from '../enums/ImageName.js';
 
 const { Engine } = matter;
 
@@ -18,7 +19,8 @@ export default class PlayState extends State {
     }
 
     async enter() {
-        console.log('Available images:', Object.keys(images.images));
+        console.log('Cyborg arm sprite:', images.get(ImageName.CyborgHand));
+console.log('Punk arm sprite:', images.get(ImageName.PunkHand));
         // Play background music
         sounds.play(SoundName.EpicBackgroundMusic);
         
@@ -40,7 +42,7 @@ export default class PlayState extends State {
 
     update(dt) {
         Engine.update(engine);
-        if(Math.random()<0.01){
+        if(Math.random()<0.001){
 
             console.log("Chance hit, about to generate obstacle");
             this.generateObstacle()

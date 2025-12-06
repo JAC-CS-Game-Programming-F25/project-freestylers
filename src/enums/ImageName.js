@@ -2,6 +2,10 @@ const ImageName = {
   Sprites: 'sprites',
   Barrel: 'barrel',
   Box: 'box',
+  PunkIdle: 'punk-idle',
+  CyborgIdle: 'cyborg-idle',
+  PunkHand: 'punk-hand-1',
+  CyborgHand: 'cyborg-hand-1'
 };
 
 export default ImageName;

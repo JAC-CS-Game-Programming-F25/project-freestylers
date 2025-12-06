@@ -1,4 +1,6 @@
 import Character from './Character.js';
+import ImageName from '../enums/ImageName.js';
+import { images } from '../globals.js';
 
 export default class Cyborg extends Character {
     static WIDTH = 48;
@@ -14,29 +16,27 @@ export default class Cyborg extends Character {
         const sprite = Cyborg.loadSprite();
         const sprites = {
             idle: sprite,
+            arm: images.get(ImageName.CyborgHand)
         };
         
         super(x, y, Cyborg.WIDTH, Cyborg.HEIGHT, sprites, world);
     }
 
     static loadSprite() {
-        const img = new Image();
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
         canvas.width = Cyborg.SPRITE_WIDTH;
         canvas.height = Cyborg.SPRITE_HEIGHT;
         
-       img.src = './assets/images/Characters/Cyborg/Walk1.png';
+        const spriteSheet = images.get(ImageName.CyborgIdle);
         
-        img.onload = () => {
-            // Extract the 5th frame from sprite sheet
-            ctx.drawImage(
-                img,
-                Cyborg.SPRITE_X, Cyborg.SPRITE_Y, Cyborg.SPRITE_WIDTH, Cyborg.SPRITE_HEIGHT,
-                0, 0, Cyborg.SPRITE_WIDTH, Cyborg.SPRITE_HEIGHT
-            );
-        };
+        // Extract the 5th frame from sprite sheet
+        ctx.drawImage(
+            spriteSheet.image,
+            Cyborg.SPRITE_X, Cyborg.SPRITE_Y, Cyborg.SPRITE_WIDTH, Cyborg.SPRITE_HEIGHT,
+            0, 0, Cyborg.SPRITE_WIDTH, Cyborg.SPRITE_HEIGHT
+        );
         
         return canvas;
     }

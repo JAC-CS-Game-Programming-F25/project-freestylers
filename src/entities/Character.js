@@ -3,66 +3,95 @@ import { context, matter } from '../globals.js';
 const { Bodies, World, Body, Constraint } = matter;
 
 export default class Character {
-    constructor(x, y, width, height, sprites, world) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.colliderHeight = height * 0.9;  
-        this.sprites = sprites;
-        this.world = world;
+   constructor(x, y, width, height, sprites, world) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.colliderHeight = height * 0.9;  
+    this.sprites = sprites;
+    this.world = world;
+    this.flipped = false; // ADD THIS - default to false
 
-        this.currentSprite = sprites.idle || sprites.default;
-        this.isAlive = true;
+    this.currentSprite = sprites.idle || sprites.default;
+    this.isAlive = true;
 
-        this.jumpPower = 0.01;
+    this.jumpPower = 0.01;
 
-        // wobble animation
-        this.wobbleSpeed = 0.01;
-        this.wobbleAmount = 0.8;
-        this.currentWobble = 0;
-        this.wobbleDirection = 1;
+    // ARM ANIMATION
+    this.armSprite = sprites.arm || null;
+    this.armRaised = false;
+    this.armAngle = 0; // Current arm angle (0 = down)
+    this.armTargetAngle = 0; // Target angle (0 = down, -Math.PI/2 = raised up)
+    this.armSpeed = 0.2; // How fast arm rotates
+    this.armWidth = 32; // Arm sprite width
+    this.armHeight = 32; // Arm sprite height
+    
+    // Arm position relative to character center
+    this.armOffsetX = this.flipped ? -10 : 10; // Shoulder position X
+    this.armOffsetY = -5; // Shoulder position Y (slightly above center)
 
-        this.body = Bodies.rectangle(x, y, width, this.colliderHeight, {
-            density: 0.002,
-            friction: 0.5,
-            restitution: 0.2,
-            label: 'character'
-        });
+    // wobble animation (COMMENTED OUT FOR NOW)
+    // this.wobbleSpeed = 0.01;
+    // this.wobbleAmount = 0.8;
+    // this.currentWobble = 0;
+    // this.wobbleDirection = 1;
 
-        this.anchorX = x;
-        this.anchorY = y + this.colliderHeight / 2;
+    this.body = Bodies.rectangle(x, y, width, this.colliderHeight, {
+        density: 0.002,
+        friction: 0.5,
+        restitution: 0.2,
+        label: 'character'
+    });
 
-        this.anchor = Constraint.create({
-            bodyA: this.body,
-            pointA: { x: 0, y: this.colliderHeight / 2 },
-            pointB: { x: this.anchorX, y: this.anchorY },
-            length: 0,
-            stiffness: 1,
-            angularStiffness: 1
-        });
+    this.anchorX = x;
+    this.anchorY = y + this.colliderHeight / 2;
 
-        this.isAttached = true;
+    this.anchor = Constraint.create({
+        bodyA: this.body,
+        pointA: { x: 0, y: this.colliderHeight / 2 },
+        pointB: { x: this.anchorX, y: this.anchorY },
+        length: 0,
+        stiffness: 1,
+        angularStiffness: 1
+    });
 
-        World.add(world, this.body);
-        World.add(world, this.anchor);
-    }
+    this.isAttached = true;
 
+    World.add(world, this.body);
+    World.add(world, this.anchor);
+}
     update(dt) {
         if (!this.isAlive) return;
 
-        if (this.isAttached) {
-            this.currentWobble += this.wobbleSpeed * this.wobbleDirection;
-
-            if (Math.abs(this.currentWobble) >= this.wobbleAmount) {
-                this.wobbleDirection *= -1;
-            }
-
-            Body.setAngle(this.body, this.currentWobble);
+        // ARM INTERPOLATION - smoothly rotate arm to target angle
+        if (this.armAngle < this.armTargetAngle) {
+            this.armAngle = Math.min(this.armAngle + this.armSpeed, this.armTargetAngle);
+        } else if (this.armAngle > this.armTargetAngle) {
+            this.armAngle = Math.max(this.armAngle - this.armSpeed, this.armTargetAngle);
         }
+
+        // WOBBLE (COMMENTED OUT)
+        // if (this.isAttached) {
+        //     this.currentWobble += this.wobbleSpeed * this.wobbleDirection;
+        //     if (Math.abs(this.currentWobble) >= this.wobbleAmount) {
+        //         this.wobbleDirection *= -1;
+        //     }
+        //     Body.setAngle(this.body, this.currentWobble);
+        // }
 
         this.x = this.body.position.x;
         this.y = this.body.position.y;
+    }
+
+    raiseArm() {
+        this.armRaised = true;
+        this.armTargetAngle = -Math.PI / 2; // -90 degrees (raised up)
+    }
+
+    lowerArm() {
+        this.armRaised = false;
+        this.armTargetAngle = 0; // 0 degrees (down)
     }
 
     jump() {
@@ -74,8 +103,8 @@ export default class Character {
 
         // jumping force
         const jumpForce = {
-            x: Math.sin(this.currentWobble) * this.jumpPower,
-            y: -this.jumpPower * 1.5
+            x: 0, // No wobble, so no X force
+            y: -this.jumpPower * 7.5
         };
 
         Body.applyForce(this.body, this.body.position, jumpForce);
@@ -88,7 +117,6 @@ export default class Character {
 
                 World.add(this.world, this.anchor);
                 this.isAttached = true;
-                this.currentWobble = 0;
             }
         }, 450);
     }
@@ -100,7 +128,7 @@ export default class Character {
         context.translate(this.x, this.y);
         context.rotate(this.body.angle);
 
-        // draw sprite
+        // Draw character sprite
         if (this.currentSprite) {
             context.drawImage(
                 this.currentSprite,
@@ -112,6 +140,28 @@ export default class Character {
         } else {
             context.fillStyle = 'red';
             context.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        }
+
+        // Draw arm sprite
+        if (this.armSprite && this.armSprite.image) {
+            context.save();
+            
+            // Move to shoulder position
+            context.translate(this.armOffsetX, this.armOffsetY);
+            
+            // Rotate arm
+            context.rotate(this.armAngle);
+            
+            // Draw arm (pivot point at top center of arm sprite)
+            context.drawImage(
+                this.armSprite.image,
+                -this.armWidth / 2,
+                0, // Pivot at top
+                this.armWidth,
+                this.armHeight
+            );
+            
+            context.restore();
         }
 
         // DEBUG HITBOX (aligned with matter.js)

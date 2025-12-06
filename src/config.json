@@ -23,6 +23,18 @@
 		"path": "./assets/images/IndustrialImages/tiles/Objects/Box3.png",
 		"width": 36,
 		"height": 36
+	},
+	{
+	"name": "punk-hand-1",
+	"path": "./assets/images/Characters/Punk/PunkHands/1.png",
+	"width": 32,
+	"height": 32
+	},
+	{
+	"name": "cyborg-hand-1",
+	"path": "./assets/images/Characters/Cyborg/CyborgHands/1.png",
+	"width": 32,
+	"height": 32
 	}
 ],
 	"fonts": [

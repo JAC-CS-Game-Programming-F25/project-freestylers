@@ -10,14 +10,11 @@ export default class Obstacle extends Rectangle {
             density: 0.000000000000000000001,
             friction: 0.5,
             restitution: 0.3,
-            frictionAir: 0.05,
+            frictionAir: 0.9,
             label: 'obstacle'
         });
         
-        console.log('Super call succeeded');
-        console.log('Creating obstacle with imageName:', imageName);
-        console.log('Image from images.get():', images.get(imageName));
-        
+       
         this.sprites = [
             new Sprite(
                 images.get(imageName),
