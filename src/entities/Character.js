@@ -24,9 +24,10 @@ export default class Character {
     this.armRaised = false;
     this.armAngle = 0; // Current arm angle (0 = down)
     this.armTargetAngle = 0; // Target angle (0 = down, -Math.PI/2 = raised up)
-    this.armSpeed = 0.2; // How fast arm rotates
+    this.armSpeed = 0.02; // How fast arm rotates
     this.armWidth = 32; // Arm sprite width
     this.armHeight = 32; // Arm sprite height
+    this.armPivotOffset = 15; // Distance from shoulder to rotation pivot
     
     // Arm position relative to character center
     this.armOffsetX = this.flipped ? 5 : -4; // Shoulder position X
@@ -106,7 +107,7 @@ export default class Character {
         // jumping force
         const jumpForce = {
             x: 0, // No wobble, so no X force
-            y: -this.jumpPower * 7.5
+            y: -this.jumpPower * 5
         };
 
         Body.applyForce(this.body, this.body.position, jumpForce);
@@ -148,8 +149,8 @@ export default class Character {
         if (this.armSprite && this.armSprite.image) {
             context.save();
             
-            // Move to shoulder position
-            context.translate(this.armOffsetX, this.armOffsetY + 10);  
+            // Move to shoulder position, then offset to pivot point
+            context.translate(this.armOffsetX, this.armOffsetY + this.armPivotOffset);  
              if (this.flipped) {
                 context.scale(-1, 1);
             }
@@ -157,23 +158,25 @@ export default class Character {
             // Rotate arm
             context.rotate(this.armAngle);
             
-            // Draw arm (pivot point at top center of arm sprite)
-           context.drawImage(
-    this.armSprite.image,
-    -this.armWidth / 2,
-    -10, // Move sprite UP by 10 to compensate
-    this.armWidth,
-    this.armHeight
-);
+            // Draw arm - move sprite up to compensate for pivot offset
+            context.drawImage(
+                this.armSprite.image,
+                -this.armWidth / 2,
+                -this.armPivotOffset,
+                this.armWidth,
+                this.armHeight
+            );
+            
+            // DEBUG: Draw pivot point
             context.fillStyle = 'red';
-            context.fillRect(-2, 10, 4, 4);
+            context.fillRect(-2, -2, 4, 4);
             context.restore();
         }
 
         // DEBUG HITBOX (aligned with matter.js)
         context.strokeStyle = "rgba(0,255,0,0.6)";
         context.lineWidth = 1;
-
+ 
         context.strokeRect(
             -this.width / 2,
             -this.colliderHeight / 2,

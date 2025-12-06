@@ -19,7 +19,7 @@ export default class Cyborg extends Character {
             arm: images.get(ImageName.CyborgHand)
         };
         
-        super(x, y, Cyborg.WIDTH, Cyborg.HEIGHT, sprites, world);
+        super(x, y, Cyborg.WIDTH, Cyborg.HEIGHT, sprites, world,false);
     }
 
     static loadSprite() {
@@ -31,7 +31,6 @@ export default class Cyborg extends Character {
         
         const spriteSheet = images.get(ImageName.CyborgIdle);
         
-        // Extract the 5th frame from sprite sheet
         ctx.drawImage(
             spriteSheet.image,
             Cyborg.SPRITE_X, Cyborg.SPRITE_Y, Cyborg.SPRITE_WIDTH, Cyborg.SPRITE_HEIGHT,

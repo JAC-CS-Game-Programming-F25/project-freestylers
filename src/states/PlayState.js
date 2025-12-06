@@ -51,32 +51,36 @@ export default class PlayState extends State {
         obstacle.update(dt);
     }
 
-    if (this.player1) this.player1.update(dt);
-    if (this.player2) this.player2.update(dt);
-    
-    // Player 1 controls (W = jump, SPACE = raise arm)
-    if (input.isKeyPressed(Input.KEYS.W)) {
-        this.player1.jump();
+    if (this.player1) {
+        this.player1.update(dt);
+        
+        // Player 1 controls (W = jump, SPACE = raise arm)
+        if (input.isKeyPressed(Input.KEYS.W)) {
+            this.player1.jump();
+        }
+        
+        if (input.isKeyHeld(Input.KEYS.SPACE)) {
+            this.player1.raiseArm();
+        } else {
+            this.player1.lowerArm();
+        }
     }
     
-    if (input.isKeyHeld(Input.KEYS.SPACE)) {
-        this.player1.raiseArm();
-    } else {
-        this.player1.lowerArm();
+    if (this.player2) {
+        this.player2.update(dt);
+        
+        // Player 2 controls (UP = jump, SHIFT = raise arm)
+        if (input.isKeyPressed(Input.KEYS.ARROW_UP)) {
+            this.player2.jump();
+        }
+        
+        if (input.isKeyHeld(Input.KEYS.SHIFT)) {
+            this.player2.raiseArm();
+        } else {
+            this.player2.lowerArm();
+        }
     }
-    
-    // Player 2 controls (UP = jump, SHIFT = raise arm)
-    if (input.isKeyPressed(Input.KEYS.ARROW_UP)) {
-        this.player2.jump();
-    }
-    
-    if (input.isKeyHeld(Input.KEYS.SHIFT)) {
-        this.player2.raiseArm();
-    } else {
-        this.player2.lowerArm();
-    }
-}
-
+} 
    render() {
     context.fillStyle = '#87CEEB';
     context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
