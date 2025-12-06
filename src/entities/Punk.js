@@ -19,11 +19,9 @@ export default class Punk extends Character {
             arm: images.get(ImageName.PunkHand)
         };
         
-        super(x, y, Punk.WIDTH, Punk.HEIGHT, sprites, world);
+        super(x, y, Punk.WIDTH, Punk.HEIGHT, sprites, world, true);
         
-        // Flag to flip rendering
-        this.flipped = true;
-        // REMOVED: this.armOffsetX = -2; ← Delete this line!
+        
     }
 
     static loadSprite() {

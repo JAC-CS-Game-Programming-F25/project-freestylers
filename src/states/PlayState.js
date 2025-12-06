@@ -19,8 +19,9 @@ export default class PlayState extends State {
     }
 
     async enter() {
+
         console.log('Cyborg arm sprite:', images.get(ImageName.CyborgHand));
-console.log('Punk arm sprite:', images.get(ImageName.PunkHand));
+        console.log('Punk arm sprite:', images.get(ImageName.PunkHand));
         // Play background music
         sounds.play(SoundName.EpicBackgroundMusic);
         
@@ -40,28 +41,41 @@ console.log('Punk arm sprite:', images.get(ImageName.PunkHand));
         console.log('Game ready! Player 1: W to jump, Player 2: UP ARROW to jump');
     }
 
-    update(dt) {
-        Engine.update(engine);
-        if(Math.random()<0.001){
-
-            console.log("Chance hit, about to generate obstacle");
-            this.generateObstacle()
-        }
-        for (const obstacle of this.obstacles) {
-            obstacle.update(dt);
-        }
-
-        if (this.player1) this.player1.update(dt);
-        if (this.player2) this.player2.update(dt);
-        
-        if (input.isKeyPressed(Input.KEYS.W)) {
-            this.player1.jump();
-        }
-        
-        if (input.isKeyPressed(Input.KEYS.ARROW_UP)) {
-            this.player2.jump();
-        }
+   update(dt) {
+    Engine.update(engine);
+    if(Math.random()<0.001){
+        console.log("Chance hit, about to generate obstacle");
+        this.generateObstacle()
     }
+    for (const obstacle of this.obstacles) {
+        obstacle.update(dt);
+    }
+
+    if (this.player1) this.player1.update(dt);
+    if (this.player2) this.player2.update(dt);
+    
+    // Player 1 controls (W = jump, SPACE = raise arm)
+    if (input.isKeyPressed(Input.KEYS.W)) {
+        this.player1.jump();
+    }
+    
+    if (input.isKeyHeld(Input.KEYS.SPACE)) {
+        this.player1.raiseArm();
+    } else {
+        this.player1.lowerArm();
+    }
+    
+    // Player 2 controls (UP = jump, SHIFT = raise arm)
+    if (input.isKeyPressed(Input.KEYS.ARROW_UP)) {
+        this.player2.jump();
+    }
+    
+    if (input.isKeyHeld(Input.KEYS.SHIFT)) {
+        this.player2.raiseArm();
+    } else {
+        this.player2.lowerArm();
+    }
+}
 
    render() {
     context.fillStyle = '#87CEEB';

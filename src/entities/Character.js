@@ -3,15 +3,16 @@ import { context, matter } from '../globals.js';
 const { Bodies, World, Body, Constraint } = matter;
 
 export default class Character {
-   constructor(x, y, width, height, sprites, world) {
+   constructor(x, y, width, height, sprites, world,flipped) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.colliderHeight = height * 0.9;  
+    this.colliderWidth = width * 0.8;
     this.sprites = sprites;
     this.world = world;
-    this.flipped = false; // ADD THIS - default to false
+    this.flipped = flipped;
 
     this.currentSprite = sprites.idle || sprites.default;
     this.isAlive = true;
@@ -28,8 +29,9 @@ export default class Character {
     this.armHeight = 32; // Arm sprite height
     
     // Arm position relative to character center
-    this.armOffsetX = this.flipped ? -10 : 10; // Shoulder position X
-    this.armOffsetY = -5; // Shoulder position Y (slightly above center)
+    this.armOffsetX = this.flipped ? 5 : -4; // Shoulder position X
+    this.armOffsetY = -15; // Shoulder position Y (slightly above center)
+    console.log('Character created - flipped:', this.flipped, 'armOffsetX:', this.armOffsetX);
 
     // wobble animation (COMMENTED OUT FOR NOW)
     // this.wobbleSpeed = 0.01;
@@ -37,7 +39,7 @@ export default class Character {
     // this.currentWobble = 0;
     // this.wobbleDirection = 1;
 
-    this.body = Bodies.rectangle(x, y, width, this.colliderHeight, {
+    this.body = Bodies.rectangle(x, y, this.colliderWidth, this.colliderHeight, {
         density: 0.002,
         friction: 0.5,
         restitution: 0.2,
@@ -147,20 +149,24 @@ export default class Character {
             context.save();
             
             // Move to shoulder position
-            context.translate(this.armOffsetX, this.armOffsetY);
+            context.translate(this.armOffsetX, this.armOffsetY + 10);  
+             if (this.flipped) {
+                context.scale(-1, 1);
+            }
             
             // Rotate arm
             context.rotate(this.armAngle);
             
             // Draw arm (pivot point at top center of arm sprite)
-            context.drawImage(
-                this.armSprite.image,
-                -this.armWidth / 2,
-                0, // Pivot at top
-                this.armWidth,
-                this.armHeight
-            );
-            
+           context.drawImage(
+    this.armSprite.image,
+    -this.armWidth / 2,
+    -10, // Move sprite UP by 10 to compensate
+    this.armWidth,
+    this.armHeight
+);
+            context.fillStyle = 'red';
+            context.fillRect(-2, 10, 4, 4);
             context.restore();
         }
 
@@ -171,7 +177,7 @@ export default class Character {
         context.strokeRect(
             -this.width / 2,
             -this.colliderHeight / 2,
-            this.width,
+            this.colliderWidth/2,
             this.colliderHeight
         );
 
