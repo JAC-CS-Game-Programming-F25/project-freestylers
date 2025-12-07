@@ -6,13 +6,13 @@ const { Bodies, Body } = matter;
 export default class Bullet extends GameEntity {
     constructor(x, y, velocityX, velocityY, sprite, width, height) {
         const body = Bodies.rectangle(x, y, width, height, {
-            label: 'bullet',
-            isSensor: false, // Changed to false so bullets can apply physics force
-            friction: 0,
-            frictionAir: 0.001, // Very small air resistance
-            restitution: 0.8, // Slight bounce
-            density: 0.01, // Light but with some mass for impact
-        });
+    label: 'bullet',
+    isSensor: false,
+    friction: 0,
+    frictionAir: 0.001,
+    restitution: 0, // NO BOUNCE - this is key!
+    density: 0.05, // Very light
+});
         
         super(body);
         

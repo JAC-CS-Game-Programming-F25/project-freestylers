@@ -49,13 +49,16 @@ export default class Gun {
             context.scale(-1, 1);
         }
         
-        // Rotate with arm + visual offset for gun sprite
-        context.rotate(this.character.armAngle + Math.PI / 4); // Gun tilts 45° down visually
+        // Rotate with arm
+        context.rotate(this.character.armAngle);
         
         // Move to end of arm (hand position)
         // The arm is drawn with pivot at top, so we need to move down by armHeight - armPivotOffset
         const handDistance = this.character.armHeight - this.character.armPivotOffset;
         context.translate(0, handDistance + this.offsetFromHand);
+        
+        // NOW rotate the gun 90 degrees to point down
+        context.rotate(Math.PI / 2);
         
         // Draw gun centered on hand
         context.drawImage(
