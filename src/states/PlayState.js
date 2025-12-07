@@ -87,6 +87,7 @@ export default class PlayState extends State {
                 this.player1.lowerArm();
                 
                const bulletOrBullets = this.player1.shoot();
+                sounds.play(SoundName.LaserShot);
                 if (bulletOrBullets) {
                     const bulletsToAdd = Array.isArray(bulletOrBullets) ? bulletOrBullets : [bulletOrBullets];
                     this.bullets.push(...bulletsToAdd);
@@ -112,6 +113,7 @@ export default class PlayState extends State {
                 this.player2.lowerArm();
                 // Shoot and add bullet to PlayState
                 const bulletOrBullets = this.player2.shoot();
+                sounds.play(SoundName.LaserShot);
                 if (bulletOrBullets) {
                     const bulletsToAdd = Array.isArray(bulletOrBullets) ? bulletOrBullets : [bulletOrBullets];
                     this.bullets.push(...bulletsToAdd);
