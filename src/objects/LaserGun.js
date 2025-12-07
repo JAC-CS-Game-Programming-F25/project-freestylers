@@ -13,22 +13,25 @@ export default class LaserGun extends Gun {
         this.bulletSprite = bulletSpriteObj?.image || bulletSpriteObj;
         this.bulletWidth = 5;
         this.bulletHeight = 3;
-        this.bulletSpeed = 50; // Very high speed for laser
+        this.bulletSpeed = 20; // Very high speed for laser
     }
 
     /**
      * Shoot a single laser bullet
      */
     shoot() {
-
-        console.log("LaserGun.shoot() called");
         const spawnPos = this.getBulletSpawnPosition();
         const angle = this.getGunAngle();
         
+        console.log('LaserGun.shoot() - spawnPos:', spawnPos, 'angle:', angle);
+        
         // Calculate bullet velocity based on gun angle
-        // Bullets travel perpendicular to the gun's angle
-        const velocityX = Math.sin(angle) * this.bulletSpeed;
-        const velocityY = Math.cos(angle) * this.bulletSpeed;
+        // Bullets travel in the direction the gun is pointing
+        // Negate velocities to shoot in correct direction
+        const velocityX = -Math.sin(angle) * this.bulletSpeed;
+        const velocityY = -Math.cos(angle) * this.bulletSpeed;
+        
+        console.log('Bullet velocity:', {velocityX, velocityY});
         
         // Create and return the bullet
         const bullet = new Bullet(

@@ -3,10 +3,13 @@ import TiledMap from '../objects/TiledMap.js';
 import CharacterFactory from '../services/CharacterFactory.js';
 import ObstacleFactory from '../services/ObstacleFactory.js';
 import LaserGun from '../objects/LaserGun.js';
+import AK47 from '../objects/AK47.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
 import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images } from '../globals.js';
 import ImageName from '../enums/ImageName.js';
+import AK from '../objects/AK47.js';
+import GunFactory from '../services/GunFactory.js';
 
 const { Engine } = matter;
 
@@ -22,6 +25,7 @@ export default class PlayState extends State {
 
     async enter() {
 
+        
         console.log('Cyborg arm sprite:', images.get(ImageName.CyborgHand));
         console.log('Punk arm sprite:', images.get(ImageName.PunkHand));
         // Play background music
@@ -37,20 +41,18 @@ export default class PlayState extends State {
         this.player1 = CharacterFactory.createCyborg(150, 130, world);
         this.player2 = CharacterFactory.createPunk(CANVAS_WIDTH - 150, 130, world);
 
-        // Equip guns
-        const gun1 = new LaserGun(this.player1);
-        this.player1.setGun(gun1);
+        //generate a gun that will be used for both players
 
-        const gun2 = new LaserGun(this.player2);
+        const [gun1, gun2] = GunFactory.createGunForBothPlayers(this.player1, this.player2);
+        this.player1.setGun(gun1);
         this.player2.setGun(gun2);
-        
         console.log('Game ready! Player 1: W to jump, SPACE to aim/shoot | Player 2: UP ARROW to jump, SHIFT to aim/shoot');
     }
 
    update(dt) {
     Engine.update(engine);
     
-    if(Math.random()<0.001){
+    if(Math.random()<0.0001){
         console.log("Chance hit, about to generate obstacle");
         this.generateObstacle()
     }
@@ -83,10 +85,11 @@ export default class PlayState extends State {
         } else {
             if (this.player1.armRaised) {
                 this.player1.lowerArm();
-                // Shoot and add bullet to PlayState
-                const bullet = this.player1.shoot();
-                if (bullet) {
-                    this.bullets.push(bullet);
+                
+               const bulletOrBullets = this.player1.shoot();
+                if (bulletOrBullets) {
+                    const bulletsToAdd = Array.isArray(bulletOrBullets) ? bulletOrBullets : [bulletOrBullets];
+                    this.bullets.push(...bulletsToAdd);
                 }
             }
         }
@@ -108,9 +111,10 @@ export default class PlayState extends State {
             if (this.player2.armRaised) {
                 this.player2.lowerArm();
                 // Shoot and add bullet to PlayState
-                const bullet = this.player2.shoot();
-                if (bullet) {
-                    this.bullets.push(bullet);
+                const bulletOrBullets = this.player2.shoot();
+                if (bulletOrBullets) {
+                    const bulletsToAdd = Array.isArray(bulletOrBullets) ? bulletOrBullets : [bulletOrBullets];
+                    this.bullets.push(...bulletsToAdd);
                 }
             }
         }
