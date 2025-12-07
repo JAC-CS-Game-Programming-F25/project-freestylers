@@ -3,7 +3,7 @@ import { context, matter } from '../globals.js';
 const { Bodies, World, Body, Constraint } = matter;
 
 export default class Character {
-   constructor(x, y, width, height, sprites, world,flipped) {
+   constructor(x, y, width, height, sprites, world, flipped, gun = null) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -18,6 +18,10 @@ export default class Character {
     this.isAlive = true;
 
     this.jumpPower = 0.01;
+
+    // GUN
+    this.gun = gun;
+    this.bullets = []; // Array to store active bullets
 
     // ARM ANIMATION
     this.armSprite = sprites.arm || null;
@@ -85,6 +89,17 @@ export default class Character {
 
         this.x = this.body.position.x;
         this.y = this.body.position.y;
+
+        // Update gun
+        if (this.gun) {
+            this.gun.update(dt);
+        }
+
+        // Update bullets
+        this.bullets.forEach(bullet => bullet.update(dt));
+        
+        // Clean up dead bullets
+        this.bullets = this.bullets.filter(bullet => !bullet.shouldCleanUp);
     }
 
     raiseArm() {
@@ -93,6 +108,12 @@ export default class Character {
     }
 
     lowerArm() {
+        // call the shoot method the instant the arm is being lowered
+        if (this.gun) {
+            const bullet = this.gun.shoot();
+            this.bullets.push(bullet);
+        }
+        
         this.armRaised = false;
         this.armTargetAngle = 0; // 0 degrees (down)
     }
@@ -185,6 +206,18 @@ export default class Character {
         );
 
         context.restore();
+
+        // Render gun (outside character's transform so it has its own positioning)
+        if (this.gun) {
+            this.gun.render();
+        }
+
+        // Render bullets
+        this.bullets.forEach(bullet => bullet.render());
+    }
+
+    setGun(gun) {
+        this.gun = gun;
     }
 
     destroy() {
@@ -195,5 +228,9 @@ export default class Character {
         }
 
         World.remove(this.world, this.body);
+
+        // Clean up all bullets
+        this.bullets.forEach(bullet => bullet.shouldCleanUp = true);
+        this.bullets = [];
     }
 }

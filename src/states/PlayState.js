@@ -2,6 +2,7 @@ import State from '../../lib/State.js';
 import TiledMap from '../objects/TiledMap.js';
 import CharacterFactory from '../services/CharacterFactory.js';
 import ObstacleFactory from '../services/ObstacleFactory.js';
+import LaserGun from '../objects/LaserGun.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
 import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images } from '../globals.js';
@@ -16,6 +17,7 @@ export default class PlayState extends State {
         this.player1 = null;
         this.player2 = null;
         this.obstacles = [];
+        this.bullets = []; 
     }
 
     async enter() {
@@ -33,51 +35,84 @@ export default class PlayState extends State {
         await this.map.preloadTiles();
         
         this.player1 = CharacterFactory.createCyborg(150, 130, world);
-        
         this.player2 = CharacterFactory.createPunk(CANVAS_WIDTH - 150, 130, world);
 
+        // Equip guns
+        const gun1 = new LaserGun(this.player1);
+        this.player1.setGun(gun1);
+
+        const gun2 = new LaserGun(this.player2);
+        this.player2.setGun(gun2);
         
-        
-        console.log('Game ready! Player 1: W to jump, Player 2: UP ARROW to jump');
+        console.log('Game ready! Player 1: W to jump, SPACE to aim/shoot | Player 2: UP ARROW to jump, SHIFT to aim/shoot');
     }
 
    update(dt) {
     Engine.update(engine);
+    
     if(Math.random()<0.001){
         console.log("Chance hit, about to generate obstacle");
         this.generateObstacle()
     }
+    
+    // Update obstacles
     for (const obstacle of this.obstacles) {
         obstacle.update(dt);
     }
 
+    // Update bullets
+    for (const bullet of this.bullets) {
+        bullet.update(dt);
+    }
+
+    // Clean up dead bullets
+    this.bullets = this.bullets.filter(bullet => !bullet.shouldCleanUp);
+
     if (this.player1) {
         this.player1.update(dt);
         
-        // Player 1 controls (W = jump, SPACE = raise arm)
+        // Player 1 controls (W = jump, SPACE = raise arm/shoot)
         if (input.isKeyPressed(Input.KEYS.W)) {
             this.player1.jump();
         }
         
         if (input.isKeyHeld(Input.KEYS.SPACE)) {
-            this.player1.raiseArm();
+            if (!this.player1.armRaised) {
+                this.player1.raiseArm();
+            }
         } else {
-            this.player1.lowerArm();
+            if (this.player1.armRaised) {
+                this.player1.lowerArm();
+                // Shoot and add bullet to PlayState
+                const bullet = this.player1.shoot();
+                if (bullet) {
+                    this.bullets.push(bullet);
+                }
+            }
         }
     }
     
     if (this.player2) {
         this.player2.update(dt);
         
-        // Player 2 controls (UP = jump, SHIFT = raise arm)
+        // Player 2 controls (UP = jump, SHIFT = raise arm/shoot)
         if (input.isKeyPressed(Input.KEYS.ARROW_UP)) {
             this.player2.jump();
         }
         
         if (input.isKeyHeld(Input.KEYS.SHIFT)) {
-            this.player2.raiseArm();
+            if (!this.player2.armRaised) {
+                this.player2.raiseArm();
+            }
         } else {
-            this.player2.lowerArm();
+            if (this.player2.armRaised) {
+                this.player2.lowerArm();
+                // Shoot and add bullet to PlayState
+                const bullet = this.player2.shoot();
+                if (bullet) {
+                    this.bullets.push(bullet);
+                }
+            }
         }
     }
 } 
@@ -104,10 +139,16 @@ export default class PlayState extends State {
 
     if (this.player1) this.player1.render();
     if (this.player2) this.player2.render();
+    
+    // Render obstacles
     for (const obstacle of this.obstacles) {
-    obstacle.render();
+        obstacle.render();
     }
 
+    // Render bullets
+    for (const bullet of this.bullets) {
+        bullet.render();
+    }
 }
 
     generateObstacle(){
@@ -116,8 +157,6 @@ export default class PlayState extends State {
     const y = -80;
 
     const obstacle = ObstacleFactory.createRandom(x, y);
-    console.log("Obstacle created:", obstacle);
-    console.log("Obstacle sprites:", obstacle.sprites);
     
     this.obstacles.push(obstacle);
     matter.World.add(world, obstacle.body);
