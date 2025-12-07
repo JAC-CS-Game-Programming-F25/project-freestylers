@@ -21,7 +21,6 @@ export default class Character {
 
     // GUN
     this.gun = gun;
-    this.bullets = []; // Array to store active bullets
 
     // ARM ANIMATION
     this.armSprite = sprites.arm || null;
@@ -94,12 +93,6 @@ export default class Character {
         if (this.gun) {
             this.gun.update(dt);
         }
-
-        // Update bullets
-        this.bullets.forEach(bullet => bullet.update(dt));
-        
-        // Clean up dead bullets
-        this.bullets = this.bullets.filter(bullet => !bullet.shouldCleanUp);
     }
 
     raiseArm() {
@@ -108,14 +101,19 @@ export default class Character {
     }
 
     lowerArm() {
-        // call the shoot method the instant the arm is being lowered
-        if (this.gun) {
-            const bullet = this.gun.shoot();
-            this.bullets.push(bullet);
-        }
-        
         this.armRaised = false;
         this.armTargetAngle = 0; // 0 degrees (down)
+    }
+
+    // Shoot and return the bullet (PlayState will manage it)
+    shoot() {
+        console.log('Character.shoot() called, has gun:', !!this.gun);
+        if (this.gun) {
+            const bullet = this.gun.shoot();
+            console.log('Bullet created:', bullet);
+            return bullet;
+        }
+        return null;
     }
 
     jump() {
@@ -199,9 +197,9 @@ export default class Character {
         context.lineWidth = 1;
  
         context.strokeRect(
-            -this.width / 2,
+            -this.colliderWidth / 2,
             -this.colliderHeight / 2,
-            this.colliderWidth/2,
+            this.colliderWidth,
             this.colliderHeight
         );
 
@@ -211,9 +209,6 @@ export default class Character {
         if (this.gun) {
             this.gun.render();
         }
-
-        // Render bullets
-        this.bullets.forEach(bullet => bullet.render());
     }
 
     setGun(gun) {
@@ -228,9 +223,5 @@ export default class Character {
         }
 
         World.remove(this.world, this.body);
-
-        // Clean up all bullets
-        this.bullets.forEach(bullet => bullet.shouldCleanUp = true);
-        this.bullets = [];
     }
 }
