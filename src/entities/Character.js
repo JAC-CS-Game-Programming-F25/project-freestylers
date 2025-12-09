@@ -9,7 +9,7 @@ export default class Character {
     this.width = width;
     this.height = height;
     this.colliderHeight = height * 0.9;  
-    this.colliderWidth = width * 0.8;
+    this.colliderWidth = width * 0.4;
     this.sprites = sprites;
     this.world = world;
     this.flipped = flipped;

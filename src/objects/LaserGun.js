@@ -11,8 +11,8 @@ export default class LaserGun extends Gun {
         const bulletSpriteObj = images.get(ImageName.LaserBullet);
         // Handle both raw images and objects with .image property
         this.bulletSprite = bulletSpriteObj?.image || bulletSpriteObj;
-        this.bulletWidth = 5;
-        this.bulletHeight = 3;
+        this.bulletWidth = 8;
+        this.bulletHeight = 10;
         this.bulletSpeed = 20; // Very high speed for laser
     }
 

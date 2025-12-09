@@ -11,7 +11,7 @@ export default class Bullet extends GameEntity {
     friction: 0,
     frictionAir: 0.001,
     restitution: 0, // NO BOUNCE - this is key!
-    density: 0.05, // Very light
+    density: 0.55, // Very light
 });
         
         super(body);

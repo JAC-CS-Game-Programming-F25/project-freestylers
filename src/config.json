@@ -62,6 +62,10 @@
 	}
 ],
 	"fonts": [
+		{
+			"name": "future-millenium",
+			"path": "./assets/fonts/FutureMillenium.ttf"
+		}
 
 	],
 	"sounds": [
@@ -80,6 +84,22 @@
 			"volume": 0.5,
 			"playbackRate": 1,
 			"loop": true
+		},
+		{
+			"name": "laser-shot",
+			"path": "./assets/sounds/laser.wav",
+			"size": 1,
+			"volume": 0.5,
+			"playbackRate": 1,
+			"loop": false
+		},
+		{
+			"name": "ak",
+			"path": "./assets/sounds/ak.wav",
+			"size": 1,
+			"volume": 0.5,
+			"playbackRate": 1,
+			"loop": false
 		}
 	]
 }

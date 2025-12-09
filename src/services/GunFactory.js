@@ -22,13 +22,17 @@ export default class GunFactory {
      * Create random gun for a character
      * @param {Character} character - The character who will hold this gun
      */
-    static createRandom(character) {
-        const types = [
-            () => GunFactory.createAK(character),
-            () => GunFactory.createLaserGun(character),
-        ];
+    static createGunForBothPlayers(player1, player2) {
+        const gunType = Math.random() < 0.5 ? 'laser' : 'ak';
+    
+        const gun1 = gunType === 'laser' 
+            ? this.createLaserGun(player1) 
+            : this.createAK(player1);
+            
+        const gun2 = gunType === 'laser' 
+            ? this.createLaserGun(player2) 
+            : this.createAK(player2);
         
-        const randomIndex = Math.floor(Math.random() * types.length);
-        return types[randomIndex]();
+        return [gun1, gun2];
     }
 }
