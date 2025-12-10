@@ -116,7 +116,12 @@ export default class Gun {
         y += handY;
         
         // Add barrel length (gun extends forward from hand)
-        const barrelLength = this.width / 2; // Bullets spawn from gun tip
+        // Since gun is rotated 90 degrees, the forward dimension is the height
+        // The gun extends forward by its full height, plus we want bullets to spawn at the tip
+        // Account for gun center offset and extend well past the tip
+        const gunForwardLength = this.height; // Full gun height extends forward
+        const tipExtension = this.height * 1.5; // Additional distance past gun tip for bullet spawn
+        const barrelLength = gunForwardLength + tipExtension;
         const barrelX = barrelLength * Math.sin(effectiveAngle);
         const barrelY = barrelLength * Math.cos(effectiveAngle);
         
@@ -138,6 +143,7 @@ export default class Gun {
     /**
      * Shoot method - should be overridden by subclasses
      * Base class does nothing
+     * Subclasses should pass this.character as the shooter parameter to Bullet constructor
      */
     shoot() {
         console.warn('Gun.shoot() called but not implemented. Override this method in subclass.');

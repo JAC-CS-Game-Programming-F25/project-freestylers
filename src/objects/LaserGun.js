@@ -33,7 +33,7 @@ export default class LaserGun extends Gun {
         
         console.log('Bullet velocity:', {velocityX, velocityY});
         
-        // Create and return the bullet
+        // Create and return the bullet (pass shooter character so bullet can ignore collisions with shooter)
         const bullet = new Bullet(
             spawnPos.x,
             spawnPos.y,
@@ -41,7 +41,8 @@ export default class LaserGun extends Gun {
             velocityY,
             this.bulletSprite,
             this.bulletWidth,
-            this.bulletHeight
+            this.bulletHeight,
+            this.character // Pass the shooter character
         );
         
         return bullet;

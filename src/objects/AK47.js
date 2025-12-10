@@ -35,7 +35,8 @@ export default class AK extends Gun {
             velocityY,
             this.bulletSprite,
             this.bulletWidth,
-            this.bulletHeight
+            this.bulletHeight,
+            this.character // Pass the shooter character
         ));
         
         // Left bullet
@@ -46,7 +47,8 @@ export default class AK extends Gun {
             velocityY,
             this.bulletSprite,
             this.bulletWidth,
-            this.bulletHeight
+            this.bulletHeight,
+            this.character // Pass the shooter character
         ));
         
         // Right bullet
@@ -57,7 +59,8 @@ export default class AK extends Gun {
             velocityY,
             this.bulletSprite,
             this.bulletWidth,
-            this.bulletHeight
+            this.bulletHeight,
+            this.character // Pass the shooter character
         ));
         
         return bullets;

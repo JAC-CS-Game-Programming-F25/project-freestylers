@@ -15,6 +15,10 @@ export default class Character {
     this.flipped = flipped;
 
     this.currentSprite = sprites.idle || sprites.default;
+    // Optional horizontal nudge to visually center sprite vs hitbox.
+    // The idle sprites have extra transparent padding, but flipped sprites
+    // have padding on the opposite side, so we adjust accordingly.
+    this.spriteOffsetX = this.flipped ? -6 : 6;
     this.isAlive = true;
 
     this.jumpPower = 0.01;
@@ -49,6 +53,9 @@ export default class Character {
         restitution: 0.2,
         label: 'character'
     });
+    
+    // Store reference to this character on the body for collision detection
+    this.body.entity = this;
 
     this.anchorX = x;
     this.anchorY = y + this.colliderHeight / 2;
@@ -154,7 +161,7 @@ export default class Character {
         if (this.currentSprite) {
             context.drawImage(
                 this.currentSprite,
-                -this.width / 2,
+                -this.width / 2 + this.spriteOffsetX,
                 -this.height / 2,
                 this.width,
                 this.height

@@ -4,14 +4,14 @@ import GameEntity from "./GameEntity.js";
 const { Bodies, Body } = matter;
 
 export default class Bullet extends GameEntity {
-    constructor(x, y, velocityX, velocityY, sprite, width, height) {
+    constructor(x, y, velocityX, velocityY, sprite, width, height, shooter = null) {
         const body = Bodies.rectangle(x, y, width, height, {
     label: 'bullet',
-    isSensor: false,
+    isSensor: true, // Sensor bullets detect collisions but don't apply forces (prevents pushing characters into ground)
     friction: 0,
     frictionAir: 0.001,
-    restitution: 0, // NO BOUNCE - this is key!
-    density: 0.55, // Very light
+    restitution: 0,
+    density: 0.55,
 });
         
         super(body);
@@ -22,6 +22,7 @@ export default class Bullet extends GameEntity {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.currentFrame = 0;
+        this.shooter = shooter; // Reference to the character who shot this bullet
         
         // Set the initial velocity
         Body.setVelocity(this.body, { x: this.velocityX, y: this.velocityY });
@@ -33,6 +34,10 @@ export default class Bullet extends GameEntity {
 
     update(dt) {
         super.update(dt);
+        
+        // Maintain bullet velocity (ignore gravity effects)
+        // This ensures bullets travel in a straight line regardless of gravity
+        Body.setVelocity(this.body, { x: this.velocityX, y: this.velocityY });
         
         this.lifetime += dt;
         

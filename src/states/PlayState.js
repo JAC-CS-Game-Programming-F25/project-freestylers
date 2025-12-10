@@ -11,7 +11,7 @@ import ImageName from '../enums/ImageName.js';
 import AK from '../objects/AK47.js';
 import GunFactory from '../services/GunFactory.js';
 
-const { Engine } = matter;
+const { Engine, Events } = matter;
 
 export default class PlayState extends State {
     constructor() {
@@ -47,6 +47,131 @@ export default class PlayState extends State {
         this.player1.setGun(gun1);
         this.player2.setGun(gun2);
         console.log('Game ready! Player 1: W to jump, SPACE to aim/shoot | Player 2: UP ARROW to jump, SHIFT to aim/shoot');
+        
+        // Set up collision detection for bullets hitting characters
+        this.setupCollisionDetection();
+    }
+    
+    setupCollisionDetection() {
+        // Listen for collision events
+        Events.on(engine, 'collisionStart', (event) => {
+            const pairs = event.pairs;
+            
+            for (let i = 0; i < pairs.length; i++) {
+                const bodyA = pairs[i].bodyA;
+                const bodyB = pairs[i].bodyB;
+                
+                // Check if a bullet collided with a character
+                if (bodyA.label === 'bullet' && bodyB.label === 'character') {
+                    // Find the bullet in our bullets array
+                    const bullet = this.bullets.find(b => b.body === bodyA);
+                    if (bullet) {
+                        // Get the character that was hit
+                        const hitCharacter = bodyB.entity || (bodyB === this.player1?.body ? this.player1 : this.player2);
+                        
+                        // Don't hit the shooter
+                        if (bullet.shooter && bullet.shooter === hitCharacter) {
+                            return; // Ignore collision with shooter
+                        }
+                        
+                        // Apply knockback to the character
+                        this.applyKnockback(hitCharacter, bullet);
+                        
+                        bullet.shouldCleanUp = true;
+                        console.log('Bullet hit character');
+                    }
+                } else if (bodyA.label === 'character' && bodyB.label === 'bullet') {
+                    // Find the bullet in our bullets array
+                    const bullet = this.bullets.find(b => b.body === bodyB);
+                    if (bullet) {
+                        // Get the character that was hit
+                        const hitCharacter = bodyA.entity || (bodyA === this.player1?.body ? this.player1 : this.player2);
+                        
+                        // Don't hit the shooter
+                        if (bullet.shooter && bullet.shooter === hitCharacter) {
+                            return; // Ignore collision with shooter
+                        }
+                        
+                        // Apply knockback to the character
+                        this.applyKnockback(hitCharacter, bullet);
+                        
+                        bullet.shouldCleanUp = true;
+                        console.log('Bullet hit character');
+                    }
+                }
+            }
+        });
+    }
+    
+    applyKnockback(character, bullet) {
+        if (!character || !character.isAlive) return;
+        
+        const { Body, World } = matter;
+        
+        
+        
+        const speed = Math.sqrt(bullet.velocityX * bullet.velocityX + bullet.velocityY * bullet.velocityY);
+        
+        
+        if (speed < 0.01) {
+            // Default knockback direction
+            const knockbackX = bullet.velocityX > 0 ? 3.0 : -3.0;
+            
+            // Temporarily detach anchor so character can move
+            if (character.isAttached) {
+                World.remove(world, character.anchor);
+                character.isAttached = false;
+            }
+            
+            // Apply velocity directly
+            const currentVelocity = Body.getVelocity(character.body);
+            Body.setVelocity(character.body, {
+                x: currentVelocity.x + knockbackX,
+                y: currentVelocity.y
+            });
+            
+            // Reattach anchor after delay
+            setTimeout(() => {
+                if (character.isAlive && !character.isAttached) {
+                    character.anchor.pointB.x = character.body.position.x;
+                    character.anchor.pointB.y = character.body.position.y + character.colliderHeight / 2;
+                    
+                    World.add(world, character.anchor);
+                    character.isAttached = true;
+                }
+            }, 400);
+            return;
+        }
+        
+        const knockbackStrength = 3.0; // Velocity strength (direct velocity, bypasses mass)
+        
+        // Calculate knockback direction
+        const knockbackX = (bullet.velocityX / speed) * knockbackStrength;
+        const knockbackY = (bullet.velocityY / speed) * knockbackStrength;
+        
+        // Temporarily detach anchor so character can move
+        if (character.isAttached) {
+            World.remove(world, character.anchor);
+            character.isAttached = false;
+        }
+        
+        // Get current velocity and add knockback (direct velocity setting bypasses mass issues)
+        const currentVelocity = Body.getVelocity(character.body);
+        Body.setVelocity(character.body, {
+            x: currentVelocity.x + knockbackX,
+            y: currentVelocity.y + knockbackY
+        });
+        
+        // Reattach anchor after a delay to allow movement
+        setTimeout(() => {
+            if (character.isAlive && !character.isAttached) {
+                character.anchor.pointB.x = character.body.position.x;
+                character.anchor.pointB.y = character.body.position.y + character.colliderHeight / 2;
+                
+                World.add(world, character.anchor);
+                character.isAttached = true;
+            }
+        }, 400); // Longer delay to allow more movement
     }
 
    update(dt) {
