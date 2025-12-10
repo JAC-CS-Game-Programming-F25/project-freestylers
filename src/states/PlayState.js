@@ -21,6 +21,10 @@ export default class PlayState extends State {
         this.player2 = null;
         this.obstacles = [];
         this.bullets = []; 
+        this.player1Score = 0;
+        this.player2Score = 0;
+        this.winner = null;
+        this.scoredthisRound = false;
     }
 
     async enter() {
@@ -246,6 +250,10 @@ export default class PlayState extends State {
             }
         }
     }
+    if(!this.scoredthisRound){
+        this.updateScore();
+    }
+    
 } 
    render() {
     context.fillStyle = '#87CEEB';
@@ -292,4 +300,24 @@ export default class PlayState extends State {
     this.obstacles.push(obstacle);
     matter.World.add(world, obstacle.body);
 }
+
+    checkGameOver(){
+        if(this.player1Score>3 || this.player2Score>3){
+            this.winner = player1Score>player2Score ? "Player 1" : "Player 2";
+        }
+        
+    }
+
+    updateScore(){
+        if(this.player1.isDead){
+            this.player2Score++;
+            this.scoredthisRound = true;
+        }else if(this.player2.isDead){
+            this.player1Score++;
+            this.scoredthisRound = true;
+        }
+    }
+
+
+
 }

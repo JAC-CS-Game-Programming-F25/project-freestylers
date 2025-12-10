@@ -1,4 +1,4 @@
-import { context, matter } from '../globals.js';
+import { CANVAS_HEIGHT, context, matter } from '../globals.js';
 
 const { Bodies, World, Body, Constraint } = matter;
 
@@ -212,7 +212,6 @@ export default class Character {
 
         context.restore();
 
-        // Render gun (outside character's transform so it has its own positioning)
         if (this.gun) {
             this.gun.render();
         }
@@ -230,5 +229,9 @@ export default class Character {
         }
 
         World.remove(this.world, this.body);
+    }
+
+    isDead(){
+        return this.y> CANVAS_HEIGHT/2 +30
     }
 }
