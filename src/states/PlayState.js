@@ -179,82 +179,68 @@ export default class PlayState extends State {
     }
 
    update(dt) {
-    Engine.update(engine);
-    
-    if(Math.random()<0.0001){
-        console.log("Chance hit, about to generate obstacle");
-        this.generateObstacle()
-    }
-    
-    // Update obstacles
-    for (const obstacle of this.obstacles) {
-        obstacle.update(dt);
-    }
+        Engine.update(engine);
 
-    // Update bullets
-    for (const bullet of this.bullets) {
-        bullet.update(dt);
-    }
-
-    // Clean up dead bullets
-    this.bullets = this.bullets.filter(bullet => !bullet.shouldCleanUp);
-
-    if (this.player1) {
-        this.player1.update(dt);
-        
-        // Player 1 controls (W = jump, SPACE = raise arm/shoot)
-        if (input.isKeyPressed(Input.KEYS.W)) {
-            this.player1.jump();
+        if (Math.random() < 0.0001) {
+            this.generateObstacle();
         }
-        
-        if (input.isKeyHeld(Input.KEYS.SPACE)) {
-            if (!this.player1.armRaised) {
-                this.player1.raiseArm();
-            }
-        } else {
-            if (this.player1.armRaised) {
-                this.player1.lowerArm();
-                
-               const bulletOrBullets = this.player1.shoot();
-                sounds.play(SoundName.LaserShot);
-                if (bulletOrBullets) {
-                    const bulletsToAdd = Array.isArray(bulletOrBullets) ? bulletOrBullets : [bulletOrBullets];
-                    this.bullets.push(...bulletsToAdd);
+
+        for (const obstacle of this.obstacles) obstacle.update(dt);
+        for (const bullet of this.bullets) bullet.update(dt);
+
+        this.bullets = this.bullets.filter(b => !b.shouldCleanUp);
+
+        // PLAYER 1 CONTROLS
+        if (this.player1) {
+            this.player1.update(dt);
+
+            if (input.isKeyPressed(Input.KEYS.W)) this.player1.jump();
+
+            if (input.isKeyHeld(Input.KEYS.SPACE)) {
+                if (!this.player1.armRaised) this.player1.raiseArm();
+            } else {
+                if (this.player1.armRaised) {
+                    this.player1.lowerArm();
+                    const shots = this.player1.shoot();
+                    sounds.play(SoundName.LaserShot);
+                    if (shots) this.bullets.push(...(Array.isArray(shots) ? shots : [shots]));
                 }
             }
         }
-    }
-    
-    if (this.player2) {
-        this.player2.update(dt);
-        
-        // Player 2 controls (UP = jump, SHIFT = raise arm/shoot)
-        if (input.isKeyPressed(Input.KEYS.ARROW_UP)) {
-            this.player2.jump();
-        }
-        
-        if (input.isKeyHeld(Input.KEYS.SHIFT)) {
-            if (!this.player2.armRaised) {
-                this.player2.raiseArm();
-            }
-        } else {
-            if (this.player2.armRaised) {
-                this.player2.lowerArm();
-                // Shoot and add bullet to PlayState
-                const bulletOrBullets = this.player2.shoot();
-                sounds.play(SoundName.LaserShot);
-                if (bulletOrBullets) {
-                    const bulletsToAdd = Array.isArray(bulletOrBullets) ? bulletOrBullets : [bulletOrBullets];
-                    this.bullets.push(...bulletsToAdd);
+
+        // PLAYER 2 CONTROLS
+        if (this.player2) {
+            this.player2.update(dt);
+
+            if (input.isKeyPressed(Input.KEYS.ARROW_UP)) this.player2.jump();
+
+            if (input.isKeyHeld(Input.KEYS.SHIFT)) {
+                if (!this.player2.armRaised) this.player2.raiseArm();
+            } else {
+                if (this.player2.armRaised) {
+                    this.player2.lowerArm();
+                    const shots = this.player2.shoot();
+                    sounds.play(SoundName.LaserShot);
+                    if (shots) this.bullets.push(...(Array.isArray(shots) ? shots : [shots]));
                 }
             }
         }
+
+        // ---- ROUND OVER CHECK ----
+        if (
+            !this.scoredthisRound &&
+            (
+                (this.player1 && this.player1.isDead()) ||
+                (this.player2 && this.player2.isDead())
+            )
+        ) {
+            console.log("Round scored.");
+            this.updateScore();
+            this.scoredthisRound = true;
+
+            setTimeout(() => this.resetRound(), 1500);
+        }
     }
-    if(!this.scoredthisRound){
-        this.updateScore();
-    }
-    
-} 
    render() {
     context.fillStyle = '#87CEEB';
     context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -308,15 +294,24 @@ export default class PlayState extends State {
         
     }
 
-    updateScore(){
-        if(this.player1.isDead){
-            this.player2Score++;
-            this.scoredthisRound = true;
-        }else if(this.player2.isDead){
-            this.player1Score++;
-            this.scoredthisRound = true;
-        }
+   updateScore() {
+        if (this.player1.isDead()) this.player2Score++;
+        else if (this.player2.isDead()) this.player1Score++;
     }
+    resetRound() {
+        console.log("Resetting round...");
+
+        this.bullets = [];
+
+        this.player1.respawn(150, 130);
+        this.player2.respawn(CANVAS_WIDTH - 150, 130);
+
+        matter.Body.setVelocity(this.player1.body, { x: 0, y: 0 });
+        matter.Body.setVelocity(this.player2.body, { x: 0, y: 0 });
+
+        this.scoredthisRound = false;
+    }
+
 
 
 

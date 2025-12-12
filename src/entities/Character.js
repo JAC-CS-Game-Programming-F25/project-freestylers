@@ -71,8 +71,8 @@ export default class Character {
 
     this.isAttached = true;
 
-    World.add(world, this.body);
-    World.add(world, this.anchor);
+    World.add(this.world, this.body);
+    World.add(this.world, this.anchor);
 }
     update(dt) {
         if (!this.isAlive) return;
@@ -232,6 +232,59 @@ export default class Character {
     }
 
     isDead(){
-        return this.y> CANVAS_HEIGHT/2 +30
+        // Check body position directly to avoid stale this.y values
+        return this.body.position.y > CANVAS_HEIGHT/2 + 30;
     }
+
+    
+        /**
+         * Respawn the character at the given position, called at the beginning of each round
+         * @param {number} x The x coordinate of the new position.
+         * @param {number} y The y coordinate of the new position.
+         */
+    respawn(x, y) {
+        this.isAlive = true;
+        
+        // Calculate new anchor position
+        const newAnchorY = y + this.colliderHeight / 2;
+        
+        // Temporarily remove anchor constraint to prevent it from pulling the body
+        const wasAttached = this.isAttached;
+        if (this.isAttached) {
+            World.remove(this.world, this.anchor);
+            this.isAttached = false;
+        }
+        
+        // Reset body position, velocity, and angle
+        matter.Body.setPosition(this.body, { x, y });
+        matter.Body.setVelocity(this.body, { x: 0, y: 0 });
+        matter.Body.setAngle(this.body, 0);
+        matter.Body.setAngularVelocity(this.body, 0);
+        
+        // Wake up the body in case it was sleeping
+        matter.Body.setStatic(this.body, false);
+        
+        // Update x and y immediately so isDead() works correctly
+        this.x = x;
+        this.y = y;
+        
+        // Update anchor position
+        this.anchor.pointB.x = x;
+        this.anchor.pointB.y = newAnchorY;
+        this.anchorX = x;
+        this.anchorY = newAnchorY;
+        
+        // Reset arm state
+        this.armRaised = false;
+        this.armAngle = 0;
+        this.armTargetAngle = 0;
+        
+        // Reattach anchor if it was attached before
+        if (wasAttached) {
+            World.add(this.world, this.anchor);
+            this.isAttached = true;
+        }
+    }
+
+
 }
