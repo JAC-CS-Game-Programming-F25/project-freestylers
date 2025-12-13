@@ -109,74 +109,54 @@ export default class PlayState extends State {
     
     applyKnockback(character, bullet) {
         if (!character || !character.isAlive) return;
-        
+
         const { Body, World } = matter;
-        
-        
-        
-        const speed = Math.sqrt(bullet.velocityX * bullet.velocityX + bullet.velocityY * bullet.velocityY);
-        
-        
-        if (speed < 0.01) {
-            // Default knockback direction
-            const knockbackX = bullet.velocityX > 0 ? 3.0 : -3.0;
-            
-            // Temporarily detach anchor so character can move
-            if (character.isAttached) {
-                World.remove(world, character.anchor);
-                character.isAttached = false;
-            }
-            
-            // Apply velocity directly
-            const currentVelocity = Body.getVelocity(character.body);
-            Body.setVelocity(character.body, {
-                x: currentVelocity.x + knockbackX,
-                y: currentVelocity.y
-            });
-            
-            // Reattach anchor after delay
-            setTimeout(() => {
-                if (character.isAlive && !character.isAttached) {
-                    character.anchor.pointB.x = character.body.position.x;
-                    character.anchor.pointB.y = character.body.position.y + character.colliderHeight / 2;
-                    
-                    World.add(world, character.anchor);
-                    character.isAttached = true;
-                }
-            }, 400);
-            return;
-        }
-        
-        const knockbackStrength = 3.0; // Velocity strength (direct velocity, bypasses mass)
-        
-        // Calculate knockback direction
-        const knockbackX = (bullet.velocityX / speed) * knockbackStrength;
-        const knockbackY = (bullet.velocityY / speed) * knockbackStrength;
-        
-        // Temporarily detach anchor so character can move
+
+        const speed = Math.sqrt(
+            bullet.velocityX * bullet.velocityX +
+            bullet.velocityY * bullet.velocityY
+        );
+
+        // Detach anchor so character can move
         if (character.isAttached) {
             World.remove(world, character.anchor);
             character.isAttached = false;
         }
-        
-        // Get current velocity and add knockback (direct velocity setting bypasses mass issues)
-        const currentVelocity = Body.getVelocity(character.body);
-        Body.setVelocity(character.body, {
-            x: currentVelocity.x + knockbackX,
-            y: currentVelocity.y + knockbackY
-        });
-        
-        // Reattach anchor after a delay to allow movement
+
+        const currentVelocity = character.body.velocity;
+
+        if (speed < 0.01) {
+            const knockbackX = bullet.velocityX > 0 ? 3.0 : -3.0;
+
+            Body.setVelocity(character.body, {
+                x: currentVelocity.x + knockbackX,
+                y: currentVelocity.y,
+            });
+        } else {
+            const knockbackStrength = 3.0;
+
+            const knockbackX = (bullet.velocityX / speed) * knockbackStrength;
+            const knockbackY = (bullet.velocityY / speed) * knockbackStrength;
+
+            Body.setVelocity(character.body, {
+                x: currentVelocity.x + knockbackX,
+                y: currentVelocity.y + knockbackY,
+            });
+        }
+
+        // Reattach anchor after delay
         setTimeout(() => {
             if (character.isAlive && !character.isAttached) {
                 character.anchor.pointB.x = character.body.position.x;
-                character.anchor.pointB.y = character.body.position.y + character.colliderHeight / 2;
-                
+                character.anchor.pointB.y =
+                    character.body.position.y + character.colliderHeight / 2;
+
                 World.add(world, character.anchor);
                 character.isAttached = true;
             }
-        }, 400); // Longer delay to allow more movement
+        }, 400);
     }
+
 
    update(dt) {
         Engine.update(engine);

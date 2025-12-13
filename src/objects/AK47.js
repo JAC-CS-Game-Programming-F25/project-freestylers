@@ -8,8 +8,7 @@ export default class AK extends Gun {
         const gunSprite = images.get(ImageName.AK);
         super(character, gunSprite, 14, 10);
         
-        const bulletSpriteObj = images.get(ImageName.AKBullet);
-        this.bulletSprite = bulletSpriteObj?.image || bulletSpriteObj;
+        this.bulletSprite = images.get(ImageName.AKBullet);
         this.bulletWidth = 4;
         this.bulletHeight = 3;
         this.bulletSpeed = 10;
@@ -21,48 +20,48 @@ export default class AK extends Gun {
     shoot() {
         const spawnPos = this.getBulletSpawnPosition();
         const angle = this.getGunAngle();
-        
+
         const velocityX = -Math.sin(angle) * this.bulletSpeed;
         const velocityY = -Math.cos(angle) * this.bulletSpeed;
-        
+
         const bullets = [];
-        
+
         // Center bullet
         bullets.push(new Bullet(
             spawnPos.x,
             spawnPos.y,
-            velocityX,
-            velocityY,
-            this.bulletSprite,
             this.bulletWidth,
             this.bulletHeight,
-            this.character // Pass the shooter character
+            this.bulletSprite,
+            velocityX,
+            velocityY,
+            this.character
         ));
-        
+
         // Left bullet
         bullets.push(new Bullet(
             spawnPos.x - 5,
             spawnPos.y,
-            velocityX,
-            velocityY,
-            this.bulletSprite,
             this.bulletWidth,
             this.bulletHeight,
-            this.character // Pass the shooter character
+            this.bulletSprite,
+            velocityX,
+            velocityY,
+            this.character
         ));
-        
+
         // Right bullet
         bullets.push(new Bullet(
             spawnPos.x + 5,
             spawnPos.y,
-            velocityX,
-            velocityY,
-            this.bulletSprite,
             this.bulletWidth,
             this.bulletHeight,
-            this.character // Pass the shooter character
+            this.bulletSprite,
+            velocityX,
+            velocityY,
+            this.character
         ));
-        
+
         return bullets;
     }
 }
