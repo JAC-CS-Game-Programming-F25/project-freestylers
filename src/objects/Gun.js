@@ -69,12 +69,6 @@ export default class Gun {
             this.height
         );
         
-        // DEBUG: Draw gun center point
-        if (false) { // Set to true for debugging
-            context.fillStyle = 'blue';
-            context.fillRect(-2, -2, 4, 4);
-        }
-        
         context.restore();
     }
 

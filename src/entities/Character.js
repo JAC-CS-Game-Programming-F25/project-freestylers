@@ -1,79 +1,78 @@
 import { CANVAS_HEIGHT, context, matter } from '../globals.js';
+import Rectangle from './Rectangle.js';
 
 const { Bodies, World, Body, Constraint } = matter;
+export default class Character extends Rectangle {
+	constructor(x, y, width, height, sprites, world, flipped, gun = null) {
+		// Collider sizes
+		const colliderHeight = height * 0.9;
+		const colliderWidth = width * 0.4;
 
-export default class Character {
-   constructor(x, y, width, height, sprites, world, flipped, gun = null) {
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-    this.colliderHeight = height * 0.9;  
-    this.colliderWidth = width * 0.4;
-    this.sprites = sprites;
-    this.world = world;
-    this.flipped = flipped;
+		super(
+			x - colliderWidth / 2,
+			y - colliderHeight / 2,
+			colliderWidth,
+			colliderHeight,
+			{
+				density: 0.002,
+				friction: 0.5,
+				restitution: 0.2,
+				label: 'character',
+			}
+		);
 
-    this.currentSprite = sprites.idle || sprites.default;
-    // Optional horizontal nudge to visually center sprite vs hitbox.
-    // The idle sprites have extra transparent padding, but flipped sprites
-    // have padding on the opposite side, so we adjust accordingly.
-    this.spriteOffsetX = this.flipped ? -6 : 6;
-    this.isAlive = true;
+		// ---- EXISTING STATE (UNCHANGED) ----
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.colliderHeight = colliderHeight;
+		this.colliderWidth = colliderWidth;
 
-    this.jumpPower = 0.01;
+		this.sprites = sprites;
+		this.world = world;
+		this.flipped = flipped;
 
-    // GUN
-    this.gun = gun;
+		this.currentSprite = sprites.idle || sprites.default;
 
-    // ARM ANIMATION
-    this.armSprite = sprites.arm || null;
-    this.armRaised = false;
-    this.armAngle = 0; // Current arm angle (0 = down)
-    this.armTargetAngle = 0; // Target angle (0 = down, -Math.PI/2 = raised up)
-    this.armSpeed = 0.02; // How fast arm rotates
-    this.armWidth = 32; // Arm sprite width
-    this.armHeight = 32; // Arm sprite height
-    this.armPivotOffset = 15; // Distance from shoulder to rotation pivot
-    
-    // Arm position relative to character center
-    this.armOffsetX = this.flipped ? 5 : -4; // Shoulder position X
-    this.armOffsetY = -15; // Shoulder position Y (slightly above center)
-    console.log('Character created - flipped:', this.flipped, 'armOffsetX:', this.armOffsetX);
+		this.spriteOffsetX = this.flipped ? -6 : 6;
+		this.isAlive = true;
 
-    // wobble animation (COMMENTED OUT FOR NOW)
-    // this.wobbleSpeed = 0.01;
-    // this.wobbleAmount = 0.8;
-    // this.currentWobble = 0;
-    // this.wobbleDirection = 1;
+		this.jumpPower = 0.01;
 
-    this.body = Bodies.rectangle(x, y, this.colliderWidth, this.colliderHeight, {
-        density: 0.002,
-        friction: 0.5,
-        restitution: 0.2,
-        label: 'character'
-    });
-    
-    // Store reference to this character on the body for collision detection
-    this.body.entity = this;
+		// GUN
+		this.gun = gun;
 
-    this.anchorX = x;
-    this.anchorY = y + this.colliderHeight / 2;
+		// ARM
+		this.armSprite = sprites.arm || null;
+		this.armRaised = false;
+		this.armAngle = 0;
+		this.armTargetAngle = 0;
+		this.armSpeed = 0.02;
+		this.armWidth = 32;
+		this.armHeight = 32;
+		this.armPivotOffset = 15;
 
-    this.anchor = Constraint.create({
-        bodyA: this.body,
-        pointA: { x: 0, y: this.colliderHeight / 2 },
-        pointB: { x: this.anchorX, y: this.anchorY },
-        length: 0,
-        stiffness: 1,
-        angularStiffness: 1
-    });
+		this.armOffsetX = this.flipped ? 5 : -4;
+		this.armOffsetY = -15;
 
-    this.isAttached = true;
+		// ---- ANCHOR SETUP (UNCHANGED) ----
+		this.anchorX = x;
+		this.anchorY = y + this.colliderHeight / 2;
 
-    World.add(this.world, this.body);
-    World.add(this.world, this.anchor);
-}
+		this.anchor = Constraint.create({
+			bodyA: this.body,
+			pointA: { x: 0, y: this.colliderHeight / 2 },
+			pointB: { x: this.anchorX, y: this.anchorY },
+			length: 0,
+			stiffness: 1,
+			angularStiffness: 1,
+		});
+
+		this.isAttached = true;
+
+		World.add(this.world, this.anchor);
+	}
     update(dt) {
         if (!this.isAlive) return;
 
