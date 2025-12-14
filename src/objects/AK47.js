@@ -20,9 +20,9 @@ export default class AK extends Gun {
     shoot() {
         const spawnPos = this.getBulletSpawnPosition();
         const angle = this.getGunAngle();
-
-        const velocityX = -Math.sin(angle) * this.bulletSpeed;
-        const velocityY = -Math.cos(angle) * this.bulletSpeed;
+        const direction = this.character.flipped ? 1 : -1;
+        const velocityX = Math.sin(angle) * this.bulletSpeed * direction;
+        const velocityY = Math.cos(angle) * this.bulletSpeed;
 
         const bullets = [];
 

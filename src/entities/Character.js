@@ -1,7 +1,7 @@
 import { CANVAS_HEIGHT, context, matter } from '../globals.js';
 import Rectangle from './Rectangle.js';
 
-const { Bodies, World, Body, Constraint } = matter;
+const { Body } = matter;
 export default class Character extends Rectangle {
 	constructor(x, y, width, height, sprites, world, flipped, gun = null) {
 		// Collider sizes
@@ -21,7 +21,6 @@ export default class Character extends Rectangle {
 			}
 		);
 
-		// ---- EXISTING STATE (UNCHANGED) ----
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -56,25 +55,19 @@ export default class Character extends Rectangle {
 		this.armOffsetX = this.flipped ? 5 : -4;
 		this.armOffsetY = -15;
 
-		// ---- ANCHOR SETUP (UNCHANGED) ----
-		this.anchorX = x;
-		this.anchorY = y + this.colliderHeight / 2;
-
-		this.anchor = Constraint.create({
-			bodyA: this.body,
-			pointA: { x: 0, y: this.colliderHeight / 2 },
-			pointB: { x: this.anchorX, y: this.anchorY },
-			length: 0,
-			stiffness: 1,
-			angularStiffness: 1,
-		});
-
-		this.isAttached = true;
-
-		World.add(this.world, this.anchor);
+        this.isGrounded = true;
 	}
+
     update(dt) {
         if (!this.isAlive) return;
+        if (this.body.position.y >= 135) {
+            this.isGrounded = true;
+        }
+        else {
+            this.isGrounded = false;
+        }
+        
+        this.tilt(dt);
 
         // ARM INTERPOLATION - smoothly rotate arm to target angle
         if (this.armAngle < this.armTargetAngle) {
@@ -82,15 +75,6 @@ export default class Character extends Rectangle {
         } else if (this.armAngle > this.armTargetAngle) {
             this.armAngle = Math.max(this.armAngle - this.armSpeed, this.armTargetAngle);
         }
-
-        // WOBBLE (COMMENTED OUT)
-        // if (this.isAttached) {
-        //     this.currentWobble += this.wobbleSpeed * this.wobbleDirection;
-        //     if (Math.abs(this.currentWobble) >= this.wobbleAmount) {
-        //         this.wobbleDirection *= -1;
-        //     }
-        //     Body.setAngle(this.body, this.currentWobble);
-        // }
 
         this.x = this.body.position.x;
         this.y = this.body.position.y;
@@ -113,40 +97,31 @@ export default class Character extends Rectangle {
 
     // Shoot and return the bullet (PlayState will manage it)
     shoot() {
-        console.log('Character.shoot() called, has gun:', !!this.gun);
         if (this.gun) {
             const bullet = this.gun.shoot();
-            console.log('Bullet created:', bullet);
             return bullet;
         }
         return null;
     }
 
     jump() {
-        if (!this.isAttached) return;
+        if (!this.isGrounded) {
+            return;
+        }
+        const MAX_TILT = 0.35; // same as tilt system
 
-        // detach from world feet
-        World.remove(this.world, this.anchor);
-        this.isAttached = false;
+        const tiltRatio = Math.max(
+            -1,
+            Math.min(1, this.body.angle / MAX_TILT)
+        );
+        const HORIZONTAL_JUMP_FORCE = 0.03;
 
-        // jumping force
         const jumpForce = {
-            x: 0, // No wobble, so no X force
+            x: tiltRatio * HORIZONTAL_JUMP_FORCE,
             y: -this.jumpPower * 5
         };
 
         Body.applyForce(this.body, this.body.position, jumpForce);
-
-        // reattach after delay
-        setTimeout(() => {
-            if (this.isAlive && !this.isAttached) {
-                this.anchor.pointB.x = this.body.position.x;
-                this.anchor.pointB.y = this.body.position.y + this.colliderHeight / 2;
-
-                World.add(this.world, this.anchor);
-                this.isAttached = true;
-            }
-        }, 450);
     }
 
     render() {
@@ -222,37 +197,41 @@ export default class Character extends Rectangle {
 
     destroy() {
         this.isAlive = false;
-
-        if (this.isAttached) {
-            World.remove(this.world, this.anchor);
-        }
-
-        World.remove(this.world, this.body);
     }
 
     isDead(){
-        // Check body position directly to avoid stale this.y values
         return this.body.position.y > CANVAS_HEIGHT/2 + 30;
     }
 
+    tilt(dt) {
+        if (!this.isGrounded) {
+            return;
+        }
+        const MAX_TILT = 0.35;
+        const RETURN_STRENGTH = 0.15;
+        const OSC_SPEED = 2.0; // radians per second
+
+        this.tiltTime ??= 0;
+        this.tiltTime += dt;
+
+        let targetAngle =
+            Math.sin(this.tiltTime * OSC_SPEED) * MAX_TILT;
+
+        if (this.flipped) targetAngle *= -1;
+
+        const diff = targetAngle - this.body.angle;
+        Body.setAngularVelocity(this.body, diff * RETURN_STRENGTH);
+    }
+
+
     
-        /**
-         * Respawn the character at the given position, called at the beginning of each round
-         * @param {number} x The x coordinate of the new position.
-         * @param {number} y The y coordinate of the new position.
-         */
+    /**
+     * Respawn the character at the given position, called at the beginning of each round
+     * @param {number} x The x coordinate of the new position.
+     * @param {number} y The y coordinate of the new position.
+     */
     respawn(x, y) {
         this.isAlive = true;
-        
-        // Calculate new anchor position
-        const newAnchorY = y + this.colliderHeight / 2;
-        
-        // Temporarily remove anchor constraint to prevent it from pulling the body
-        const wasAttached = this.isAttached;
-        if (this.isAttached) {
-            World.remove(this.world, this.anchor);
-            this.isAttached = false;
-        }
         
         // Reset body position, velocity, and angle
         matter.Body.setPosition(this.body, { x, y });
@@ -267,23 +246,9 @@ export default class Character extends Rectangle {
         this.x = x;
         this.y = y;
         
-        // Update anchor position
-        this.anchor.pointB.x = x;
-        this.anchor.pointB.y = newAnchorY;
-        this.anchorX = x;
-        this.anchorY = newAnchorY;
-        
         // Reset arm state
         this.armRaised = false;
         this.armAngle = 0;
         this.armTargetAngle = 0;
-        
-        // Reattach anchor if it was attached before
-        if (wasAttached) {
-            World.add(this.world, this.anchor);
-            this.isAttached = true;
-        }
     }
-
-
 }

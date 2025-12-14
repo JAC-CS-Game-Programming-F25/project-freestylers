@@ -28,10 +28,10 @@ export default class PlayState extends State {
     }
 
     async enter() {
+        engine.world.gravity.x = 0;
+        engine.world.gravity.y = 1;
+        engine.world.gravity.scale = 0.001;
 
-        
-        console.log('Cyborg arm sprite:', images.get(ImageName.CyborgHand));
-        console.log('Punk arm sprite:', images.get(ImageName.PunkHand));
         // Play background music
         sounds.play(SoundName.EpicBackgroundMusic);
         

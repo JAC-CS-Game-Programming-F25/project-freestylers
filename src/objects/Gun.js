@@ -130,8 +130,8 @@ export default class Gun {
      * @returns {number} Angle in radians
      */
     getGunAngle() {
-        const totalAngle = this.character.body.angle + this.character.armAngle;
-        return this.character.flipped ? this.character.body.angle - this.character.armAngle : totalAngle;
+        console.log(this.character.armAngle);
+        return this.character.armAngle;
     }
 
     /**
