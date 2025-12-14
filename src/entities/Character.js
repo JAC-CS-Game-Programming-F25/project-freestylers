@@ -37,7 +37,7 @@ export default class Character extends Rectangle {
 		this.spriteOffsetX = this.flipped ? -6 : 6;
 		this.isAlive = true;
 
-		this.jumpPower = 0.01;
+		this.jumpPower = 0.03;
 
 		// GUN
 		this.gun = gun;
@@ -114,11 +114,11 @@ export default class Character extends Rectangle {
             -1,
             Math.min(1, this.body.angle / MAX_TILT)
         );
-        const HORIZONTAL_JUMP_FORCE = 0.03;
+        const HORIZONTAL_JUMP_FORCE = 0.02;
 
         const jumpForce = {
             x: tiltRatio * HORIZONTAL_JUMP_FORCE,
-            y: -this.jumpPower * 5
+            y: -this.jumpPower
         };
 
         Body.applyForce(this.body, this.body.position, jumpForce);
@@ -222,8 +222,6 @@ export default class Character extends Rectangle {
         const diff = targetAngle - this.body.angle;
         Body.setAngularVelocity(this.body, diff * RETURN_STRENGTH);
     }
-
-
     
     /**
      * Respawn the character at the given position, called at the beginning of each round

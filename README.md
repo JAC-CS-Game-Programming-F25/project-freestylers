@@ -68,15 +68,15 @@ If players get close enough to each others, they could use their own body to pus
 
 ### State Diagram
 
-![State Diagram](./assets/images/StateDiagram_ours.png)
+![State Diagram](./assets/images/diagrams/StateDiagram_ours.png)
 
 ### Player State Diagram
 
-![Player State Diagram](./assets/images/PlayerStateDiagram.png)
+![Player State Diagram](./assets/images/diagrams/PlayerStateDiagram.png)
 
 ### 🗺️ Class Diagram
 
-![Class Diagram](./assets/images/ClassDiagram_ours.png)
+![Class Diagram](./assets/images/diagrams/ClassDiagram_ours.png)
 
 ### 🧵 Wireframes
 THe following is a pretty rough decison. The main text is there but the color scheme and fonts are not. We will have some tweening in the navigations between most screens.
