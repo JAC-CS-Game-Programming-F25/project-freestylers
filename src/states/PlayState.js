@@ -6,10 +6,13 @@ import LaserGun from '../objects/LaserGun.js';
 import AK47 from '../objects/AK47.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
-import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images } from '../globals.js';
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images, stateMachine} from '../globals.js';
 import ImageName from '../enums/ImageName.js';
 import AK from '../objects/AK47.js';
 import GunFactory from '../services/GunFactory.js';
+import renderScore from '../ui/ScoreRenderer.js';
+import GameStateName from '../enums/GameStateName.js';
+
 
 const { Engine, Events } = matter;
 
@@ -28,6 +31,7 @@ export default class PlayState extends State {
     }
 
     async enter() {
+        sounds.stop(SoundName.FunkyMusic);
         engine.world.gravity.x = 0;
         engine.world.gravity.y = 1;
         engine.world.gravity.scale = 0.001;
@@ -217,6 +221,7 @@ export default class PlayState extends State {
             console.log("Round scored.");
             this.updateScore();
             this.scoredthisRound = true;
+            this.checkGameOver();
 
             setTimeout(() => this.resetRound(), 1500);
         }
@@ -224,7 +229,6 @@ export default class PlayState extends State {
    render() {
     context.fillStyle = '#87CEEB';
     context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
     if (this.map) {
         this.map.render();
 
@@ -241,6 +245,7 @@ export default class PlayState extends State {
             );
         }
     }
+    renderScore(this.player1Score, this.player2Score);
 
     if (this.player1) this.player1.render();
     if (this.player2) this.player2.render();
@@ -267,16 +272,28 @@ export default class PlayState extends State {
     matter.World.add(world, obstacle.body);
 }
 
-    checkGameOver(){
-        if(this.player1Score>3 || this.player2Score>3){
-            this.winner = player1Score>player2Score ? "Player 1" : "Player 2";
-        }
-        
+    checkGameOver() {
+    if (this.player1Score >= 3 || this.player2Score >= 3) {
+        const winner =
+            this.player1Score > this.player2Score ? 'blue' : 'red';
+
+        stateMachine.change(GameStateName.Victory, {
+            winner,
+            blueScore: this.player1Score,
+            redScore: this.player2Score
+        });
     }
+}
+
 
    updateScore() {
-        if (this.player1.isDead()) this.player2Score++;
-        else if (this.player2.isDead()) this.player1Score++;
+        if (this.player1.isDead()){
+            this.player2Score++;
+            console.log("Player 1 score = " + this.player1Score + " | Player 2 score = " + this.player2Score);
+        } 
+        else if (this.player2.isDead()){
+            this.player1Score++;
+        } 
     }
     resetRound() {
         console.log("Resetting round...");

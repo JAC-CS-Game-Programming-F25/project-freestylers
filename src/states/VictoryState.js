@@ -1,8 +1,11 @@
 import State from '../../lib/State.js';
-import { context, CANVAS_WIDTH, CANVAS_HEIGHT, input, stateMachine, timer } from '../globals.js';
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, input, stateMachine, timer,sounds } from '../globals.js';
 import Input from '../../lib/Input.js';
 import GameStateName from '../enums/GameStateName.js';
 import Easing from '../../lib/Easing.js';
+import SoundName from '../enums/SoundName.js';
+import renderScore from '../ui/ScoreRenderer.js';
+
 
 export default class VictoryState extends State {
 	constructor() {
@@ -29,6 +32,7 @@ export default class VictoryState extends State {
 	}
 
 	async enter(params = {}) {
+		
 		this.winner = params.winner ?? this.winner;
 		this.blueScore = params.blueScore ?? this.blueScore;
 		this.redScore = params.redScore ?? this.redScore;
@@ -85,6 +89,7 @@ export default class VictoryState extends State {
 		}
 
 		if (this.menuHovered) {
+			sounds.stop(SoundName.EpicBackgroundMusic);
 			stateMachine.change(GameStateName.Menu);
 		}
 	}
@@ -114,25 +119,7 @@ export default class VictoryState extends State {
 
 	/* ---------- TOP SCORE ---------- */
 	renderScore() {
-		context.textAlign = 'center';
-		context.font = '48px FutureMillennium';
-		context.lineWidth = 6;
-
-		// Blue score
-		context.fillStyle = '#2d6bff';
-		context.strokeStyle = 'black';
-		context.strokeText(this.blueScore, CANVAS_WIDTH / 2 - 120, 60);
-		context.fillText(this.blueScore, CANVAS_WIDTH / 2 - 120, 60);
-
-		// TO
-		context.fillStyle = 'white';
-		context.strokeText('TO', CANVAS_WIDTH / 2, 60);
-		context.fillText('TO', CANVAS_WIDTH / 2, 60);
-
-		// Red score
-		context.fillStyle = '#ff2d2d';
-		context.strokeText(this.redScore, CANVAS_WIDTH / 2 + 120, 60);
-		context.fillText(this.redScore, CANVAS_WIDTH / 2 + 120, 60);
+		renderScore(this.blueScore, this.redScore);
 	}
 
 	/* ---------- WINNER TEXT ---------- */
@@ -158,16 +145,18 @@ export default class VictoryState extends State {
 
 	/* ---------- SUBTITLE ---------- */
 	renderSubtitle() {
+		const color = this.winner === 'blue' ? '#2d6bff' : '#ff2d2d';
 		context.font = '26px FutureMillennium';
 		context.textAlign = 'center';
 		context.lineWidth = 5;
-		context.fillStyle = '#3b82ff';
+		context.fillStyle = color;
 		context.strokeStyle = 'black';
 
 		const text =
 			this.winner === 'blue'
 				? 'Blue teach Red how to play the game'
 				: 'Red teach Blue how to play the game';
+
 
 		context.strokeText(text, CANVAS_WIDTH / 2, 210);
 		context.fillText(text, CANVAS_WIDTH / 2, 210);
@@ -188,7 +177,7 @@ export default class VictoryState extends State {
 
 		// MENU
 		context.font = '32px FutureMillennium';
-		context.fillStyle = this.menuHovered ? '#ff4d4d' : '#ff2d2d';
+		context.fillStyle = this.menuHovered ?  '#2dffaeff':'#198a19ff' ;
 
 		context.strokeText('MENU', CANVAS_WIDTH / 2, 315);
 		context.fillText('MENU', CANVAS_WIDTH / 2, 315);
