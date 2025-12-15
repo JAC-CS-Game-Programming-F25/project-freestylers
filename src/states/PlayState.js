@@ -46,8 +46,8 @@ export default class PlayState extends State {
         this.map = new TiledMap(mapData);
         await this.map.preloadTiles();
         
-        this.player1 = CharacterFactory.createCyborg(150, 130, world);
-        this.player2 = CharacterFactory.createPunk(CANVAS_WIDTH - 150, 130, world);
+        this.player1 = CharacterFactory.createCharacter(150, 130, false);
+        this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, true);
 
         //generate a gun that will be used for both players
 
@@ -114,52 +114,32 @@ export default class PlayState extends State {
     applyKnockback(character, bullet) {
         if (!character || !character.isAlive) return;
 
-        const { Body, World } = matter;
+        const { Body } = matter;
 
-        const speed = Math.sqrt(
-            bullet.velocityX * bullet.velocityX +
-            bullet.velocityY * bullet.velocityY
-        );
+        const vx = bullet.body.velocity.x;
+        const vy = bullet.body.velocity.y;
 
-        // Detach anchor so character can move
-        if (character.isAttached) {
-            World.remove(world, character.anchor);
-            character.isAttached = false;
-        }
+        const speed = Math.hypot(vx, vy);
+        if (speed < 0.001) return;
 
-        const currentVelocity = character.body.velocity;
+        const bulletMass = bullet.body.mass;
+        const characterMass = character.body.mass;
 
-        if (speed < 0.01) {
-            const knockbackX = bullet.velocityX > 0 ? 3.0 : -3.0;
+        // Momentum transfer
+        const impulseScale = 0.05;
 
-            Body.setVelocity(character.body, {
-                x: currentVelocity.x + knockbackX,
-                y: currentVelocity.y,
-            });
-        } else {
-            const knockbackStrength = 3.0;
+        const impulseX = (vx * bulletMass / characterMass) * impulseScale;
+        const impulseY = (vy * bulletMass / characterMass) * impulseScale;
 
-            const knockbackX = (bullet.velocityX / speed) * knockbackStrength;
-            const knockbackY = (bullet.velocityY / speed) * knockbackStrength;
+        const current = character.body.velocity;
 
-            Body.setVelocity(character.body, {
-                x: currentVelocity.x + knockbackX,
-                y: currentVelocity.y + knockbackY,
-            });
-        }
-
-        // Reattach anchor after delay
-        setTimeout(() => {
-            if (character.isAlive && !character.isAttached) {
-                character.anchor.pointB.x = character.body.position.x;
-                character.anchor.pointB.y =
-                    character.body.position.y + character.colliderHeight / 2;
-
-                World.add(world, character.anchor);
-                character.isAttached = true;
-            }
-        }, 400);
+        Body.setVelocity(character.body, {
+            x: current.x + impulseX,
+            y: current.y + impulseY * 0.3 // damp vertical
+        });
     }
+
+
 
 
    update(dt) {
@@ -170,7 +150,9 @@ export default class PlayState extends State {
         }
 
         for (const obstacle of this.obstacles) obstacle.update(dt);
-        for (const bullet of this.bullets) bullet.update(dt);
+        for (const bullet of this.bullets) {
+            bullet.update(dt)
+        }
 
         this.bullets = this.bullets.filter(b => !b.shouldCleanUp);
 
@@ -198,7 +180,7 @@ export default class PlayState extends State {
 
             if (input.isKeyPressed(Input.KEYS.ARROW_UP)) this.player2.jump();
 
-            if (input.isKeyHeld(Input.KEYS.SHIFT)) {
+            if (input.isKeyHeld(Input.KEYS.O)) {
                 if (!this.player2.armRaised) this.player2.raiseArm();
             } else {
                 if (this.player2.armRaised) {
@@ -227,39 +209,39 @@ export default class PlayState extends State {
         }
     }
    render() {
-    context.fillStyle = '#87CEEB';
-    context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    if (this.map) {
-        this.map.render();
+        context.fillStyle = '#87CEEB';
+        context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        // DEBUG: draw platform hitboxes
-        context.strokeStyle = "rgba(255,0,0,0.5)";
-        context.lineWidth = 1;
+        if (this.map) {
+            this.map.render();
 
-        for (const b of this.map.collisionBodies) {
-            context.strokeRect(
-                b.position.x - this.map.tileWidth / 2,
-                b.position.y - this.map.tileHeight / 2,
-                this.map.tileWidth,
-                this.map.tileHeight
-            );
+            // DEBUG: draw platform hitboxes
+            context.strokeStyle = "rgba(255,0,0,0.5)";
+            context.lineWidth = 1;
+
+            for (const b of this.map.collisionBodies) {
+                context.strokeRect(
+                    b.position.x - this.map.tileWidth / 2,
+                    b.position.y - this.map.tileHeight / 2,
+                    this.map.tileWidth,
+                    this.map.tileHeight
+                );
+            }
+        }
+
+        if (this.player1) this.player1.render();
+        if (this.player2) this.player2.render();
+        
+        // Render obstacles
+        for (const obstacle of this.obstacles) {
+            obstacle.render();
+        }
+
+        // Render bullets
+        for (const bullet of this.bullets) {
+            bullet.render();
         }
     }
-    renderScore(this.player1Score, this.player2Score);
-
-    if (this.player1) this.player1.render();
-    if (this.player2) this.player2.render();
-    
-    // Render obstacles
-    for (const obstacle of this.obstacles) {
-        obstacle.render();
-    }
-
-    // Render bullets
-    for (const bullet of this.bullets) {
-        bullet.render();
-    }
-}
 
     generateObstacle(){
     console.log("generateObstacle called");

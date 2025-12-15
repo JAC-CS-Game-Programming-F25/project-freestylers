@@ -3,16 +3,16 @@ import Rectangle from './Rectangle.js';
 
 const { Body } = matter;
 export default class Character extends Rectangle {
-	constructor(x, y, width, height, sprites, world, flipped, gun = null) {
-		// Collider sizes
-		const colliderHeight = height * 0.9;
-		const colliderWidth = width * 0.4;
-
+	static WIDTH = 16;
+    static HEIGHT = 36;
+    static MAX_TILT = 0.35;
+    
+    constructor(x, y, sprites, flipped, gun = null) {
 		super(
-			x - colliderWidth / 2,
-			y - colliderHeight / 2,
-			colliderWidth,
-			colliderHeight,
+			x - Character.WIDTH / 2,
+			y - Character.HEIGHT / 2,
+			Character.WIDTH,
+			Character.HEIGHT,
 			{
 				density: 0.002,
 				friction: 0.5,
@@ -21,39 +21,26 @@ export default class Character extends Rectangle {
 			}
 		);
 
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.colliderHeight = colliderHeight;
-		this.colliderWidth = colliderWidth;
+		this.width = Character.WIDTH;
+		this.height = Character.HEIGHT;
 
 		this.sprites = sprites;
-		this.world = world;
 		this.flipped = flipped;
+        this.direction = this.flipped ? -1 : 1;
 
-		this.currentSprite = sprites.idle || sprites.default;
-
-		this.spriteOffsetX = this.flipped ? -6 : 6;
 		this.isAlive = true;
 
 		this.jumpPower = 0.03;
 
-		// GUN
 		this.gun = gun;
 
-		// ARM
-		this.armSprite = sprites.arm || null;
 		this.armRaised = false;
 		this.armAngle = 0;
 		this.armTargetAngle = 0;
 		this.armSpeed = 0.02;
-		this.armWidth = 32;
-		this.armHeight = 32;
-		this.armPivotOffset = 15;
 
-		this.armOffsetX = this.flipped ? 5 : -4;
-		this.armOffsetY = -15;
+        this.armOffset = { x: 1, y: -5 };
+        this.gunOffset = { x: -2, y: -9 }
 
         this.isGrounded = true;
 	}
@@ -69,15 +56,12 @@ export default class Character extends Rectangle {
         
         this.tilt(dt);
 
-        // ARM INTERPOLATION - smoothly rotate arm to target angle
+        // ARM INTERPOLATION
         if (this.armAngle < this.armTargetAngle) {
             this.armAngle = Math.min(this.armAngle + this.armSpeed, this.armTargetAngle);
         } else if (this.armAngle > this.armTargetAngle) {
             this.armAngle = Math.max(this.armAngle - this.armSpeed, this.armTargetAngle);
         }
-
-        this.x = this.body.position.x;
-        this.y = this.body.position.y;
 
         // Update gun
         if (this.gun) {
@@ -98,8 +82,7 @@ export default class Character extends Rectangle {
     // Shoot and return the bullet (PlayState will manage it)
     shoot() {
         if (this.gun) {
-            const bullet = this.gun.shoot();
-            return bullet;
+            return this.gun.shoot();
         }
         return null;
     }
@@ -108,11 +91,10 @@ export default class Character extends Rectangle {
         if (!this.isGrounded) {
             return;
         }
-        const MAX_TILT = 0.35; // same as tilt system
 
         const tiltRatio = Math.max(
             -1,
-            Math.min(1, this.body.angle / MAX_TILT)
+            Math.min(1, this.body.angle / Character.MAX_TILT)
         );
         const HORIZONTAL_JUMP_FORCE = 0.02;
 
@@ -126,70 +108,24 @@ export default class Character extends Rectangle {
 
     render() {
         if (!this.isAlive) return;
+        // we wont call super.render since we want to render multiple sprites together, ie the body, the arm and the gun
 
         context.save();
-        context.translate(this.x, this.y);
+		context.translate(this.body.position.x, this.body.position.y);
         context.rotate(this.body.angle);
-
-        // Draw character sprite
-        if (this.currentSprite) {
-            context.drawImage(
-                this.currentSprite,
-                -this.width / 2 + this.spriteOffsetX,
-                -this.height / 2,
-                this.width,
-                this.height
-            );
-        } else {
-            context.fillStyle = 'red';
-            context.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        if (this.flipped) {
+            context.scale(-1, 1);
         }
-
-        // Draw arm sprite
-        if (this.armSprite && this.armSprite.image) {
-            context.save();
-            
-            // Move to shoulder position, then offset to pivot point
-            context.translate(this.armOffsetX, this.armOffsetY + this.armPivotOffset);  
-             if (this.flipped) {
-                context.scale(-1, 1);
-            }
-            
-            // Rotate arm
-            context.rotate(this.armAngle);
-            
-            // Draw arm - move sprite up to compensate for pivot offset
-            context.drawImage(
-                this.armSprite.image,
-                -this.armWidth / 2,
-                -this.armPivotOffset,
-                this.armWidth,
-                this.armHeight
-            );
-            
-            // DEBUG: Draw pivot point
-            context.fillStyle = 'red';
-            context.fillRect(-2, -2, 4, 4);
-            context.restore();
-        }
-
-        // DEBUG HITBOX (aligned with matter.js)
-        context.strokeStyle = "rgba(0,255,0,0.6)";
-        context.lineWidth = 1;
- 
-        context.strokeRect(
-            -this.colliderWidth / 2,
-            -this.colliderHeight / 2,
-            this.colliderWidth,
-            this.colliderHeight
-        );
-
-        context.restore();
-
+		this.sprites[this.currentFrame].render(this.renderOffset.x, this.renderOffset.y);
+        context.rotate(this.armAngle);
+        this.sprites[1].render(this.armOffset.x, this.armOffset.y);
         if (this.gun) {
-            this.gun.render();
+            context.rotate(Math.PI / 2);
+            this.gun.sprite.render(this.gunOffset.x, this.gunOffset.y);
         }
+		context.restore();
     }
+
 
     setGun(gun) {
         this.gun = gun;
@@ -207,7 +143,6 @@ export default class Character extends Rectangle {
         if (!this.isGrounded) {
             return;
         }
-        const MAX_TILT = 0.35;
         const RETURN_STRENGTH = 0.15;
         const OSC_SPEED = 2.0; // radians per second
 
@@ -215,9 +150,7 @@ export default class Character extends Rectangle {
         this.tiltTime += dt;
 
         let targetAngle =
-            Math.sin(this.tiltTime * OSC_SPEED) * MAX_TILT;
-
-        if (this.flipped) targetAngle *= -1;
+            Math.sin(this.tiltTime * OSC_SPEED) * Character.MAX_TILT * this.direction;
 
         const diff = targetAngle - this.body.angle;
         Body.setAngularVelocity(this.body, diff * RETURN_STRENGTH);
@@ -239,10 +172,6 @@ export default class Character extends Rectangle {
         
         // Wake up the body in case it was sleeping
         matter.Body.setStatic(this.body, false);
-        
-        // Update x and y immediately so isDead() works correctly
-        this.x = x;
-        this.y = y;
         
         // Reset arm state
         this.armRaised = false;

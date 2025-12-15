@@ -56,7 +56,7 @@ stateMachine.add(GameStateName.Victory, new VictoryState());
 stateMachine.add(GameStateName.Play, new PlayState());
 stateMachine.add(GameStateName.PlayerSelect, new PlayerSelectState());
 
-stateMachine.change(GameStateName.Victory);
+stateMachine.change(GameStateName.Play);
 
 const game = new Game(
 	stateMachine,
