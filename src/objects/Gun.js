@@ -1,6 +1,9 @@
-import { context } from "../globals.js";
+import Sprite from "../../lib/Sprite.js";
+import { images } from "../globals.js";
 
 export default class Gun {
+    static GUN_BARREL_OFFSET = 10;
+
     /**
      * Base Gun class that all gun types inherit from
      * @param {Character} character - The character holding this gun
@@ -8,136 +11,44 @@ export default class Gun {
      * @param {number} width - Gun sprite width
      * @param {number} height - Gun sprite height
      */
-    constructor(character, sprite, width, height) {
+    constructor(character, imageName, width, height) {
         this.character = character;
-        // Handle both raw images and objects with .image property
-        this.sprite = sprite?.image || sprite;
         this.width = width;
         this.height = height;
-        
-        // Offset from the end of the arm to the gun's rotation point
-        // Adjust this so gun attaches smoothly to hand
-        this.offsetFromHand = 0;
+        this.sprite = new Sprite(images.get(imageName), 0, 0, width, height) 
     }
 
     /**
-     * Update gun state (can be overridden by subclasses if needed)
-     * @param {number} dt - Delta time
-     */
-    update(dt) {
-        // Base gun doesn't need to update anything
-        // Subclasses can override if they need to
-    }
-
-    /**
-     * Render the gun attached to the character's arm
-     */
-    render() {
-        if (!this.character.isAlive) return;
-
-        context.save();
-        
-        // Move to character position
-        context.translate(this.character.x, this.character.y);
-        context.rotate(this.character.body.angle);
-        
-        // Move to arm/shoulder position
-        context.translate(this.character.armOffsetX, this.character.armOffsetY + this.character.armPivotOffset);
-        
-        // Flip if character is flipped
-        if (this.character.flipped) {
-            context.scale(-1, 1);
-        }
-        
-        // Rotate with arm
-        context.rotate(this.character.armAngle);
-        
-        // Move to end of arm (hand position)
-        // The arm is drawn with pivot at top, so we need to move down by armHeight - armPivotOffset
-        const handDistance = this.character.armHeight - this.character.armPivotOffset;
-        context.translate(0, handDistance + this.offsetFromHand);
-        
-        // NOW rotate the gun 90 degrees to point down
-        context.rotate(Math.PI / 2);
-        
-        // Draw gun centered on hand
-        context.drawImage(
-            this.sprite,
-            -this.width / 2,
-            -this.height / 2,
-            this.width,
-            this.height
-        );
-        
-        context.restore();
-    }
-
-    /**
-     * Get the world position where bullets should spawn (gun barrel tip)
+     * Get the position where bullets should spawn (gun barrel tip)
      * @returns {{x: number, y: number}} World coordinates of bullet spawn point
      */
     getBulletSpawnPosition() {
-        const char = this.character;
-        
-        // Calculate world position step by step
-        // Start at character position
-        let x = char.x;
-        let y = char.y;
-        
-        // Apply character body rotation
-        const bodyAngle = char.body.angle;
-        const armX = char.armOffsetX;
-        const armY = char.armOffsetY + char.armPivotOffset;
-        
-        // Rotate arm offset by body angle
-        const rotatedArmX = armX * Math.cos(bodyAngle) - armY * Math.sin(bodyAngle);
-        const rotatedArmY = armX * Math.sin(bodyAngle) + armY * Math.cos(bodyAngle);
-        
-        x += rotatedArmX;
-        y += rotatedArmY;
-        
-        // Calculate hand position (end of arm)
-        const handDistance = char.armHeight - char.armPivotOffset;
-        const totalAngle = bodyAngle + char.armAngle;
-        
-        // Flip angle if character is flipped
-        const effectiveAngle = char.flipped ? bodyAngle - char.armAngle : totalAngle;
-        
-        const handX = handDistance * Math.sin(effectiveAngle);
-        const handY = handDistance * Math.cos(effectiveAngle);
-        
-        x += handX;
-        y += handY;
-        
-        // Add barrel length (gun extends forward from hand)
-        // Since gun is rotated 90 degrees, the forward dimension is the height
-        // The gun extends forward by its full height, plus we want bullets to spawn at the tip
-        // Account for gun center offset and extend well past the tip
-        const gunForwardLength = this.height; // Full gun height extends forward
-        const tipExtension = this.height * 1.5; // Additional distance past gun tip for bullet spawn
-        const barrelLength = gunForwardLength + tipExtension;
-        const barrelX = barrelLength * Math.sin(effectiveAngle);
-        const barrelY = barrelLength * Math.cos(effectiveAngle);
-        
-        x += barrelX;
-        y += barrelY;
+        const x = this.character.body.position.x + (Gun.GUN_BARREL_OFFSET * this.character.direction);
+        const y = this.character.body.position.y;
         
         return { x, y };
     }
+
+    getBulletVelocity() {
+        const angle = this.getGunAngle();
+        const x = -Math.sin(angle) * this.bulletSpeed * this.character.direction;
+        const y = Math.cos(angle) * this.bulletSpeed;
+        return { x, y };
+    }
+
+    update(dt) {
+        
+    }    
 
     /**
      * Get the angle the gun is pointing in world space
      * @returns {number} Angle in radians
      */
     getGunAngle() {
-        console.log(this.character.armAngle);
-        return this.character.armAngle;
+        return this.character.armAngle + this.character.body.angle;
     }
 
     /**
-     * Shoot method - should be overridden by subclasses
-     * Base class does nothing
-     * Subclasses should pass this.character as the shooter parameter to Bullet constructor
      */
     shoot() {
         console.warn('Gun.shoot() called but not implemented. Override this method in subclass.');

@@ -5,8 +5,7 @@ import ImageName from "../enums/ImageName.js";
 
 export default class LaserGun extends Gun {
     constructor(character) {
-        const gunSprite = images.get(ImageName.LaserGun);
-        super(character, gunSprite, 14, 10);
+        super(character, ImageName.LaserGun, 14, 10);
         // Handle both raw images and objects with .image property
         this.bulletSprite = images.get(ImageName.LaserBullet);
         this.bulletWidth = 8;
@@ -19,11 +18,7 @@ export default class LaserGun extends Gun {
      */
     shoot() {
         const spawnPos = this.getBulletSpawnPosition();
-        const angle = this.getGunAngle();
-
-        const direction = this.character.flipped ? 1 : -1
-        const velocityX = Math.sin(angle) * this.bulletSpeed * direction;
-        const velocityY = Math.cos(angle) * this.bulletSpeed;
+        const velocity = this.getBulletVelocity();
 
         const bullet = new Bullet(
             spawnPos.x,
@@ -31,12 +26,13 @@ export default class LaserGun extends Gun {
             this.bulletWidth,
             this.bulletHeight,
             this.bulletSprite,
-            velocityX,
-            velocityY,
+            velocity.x,
+            velocity.y,
+            0.1,
             this.character
         );
 
-        return bullet;
+        return [bullet];
     }
 
 }
