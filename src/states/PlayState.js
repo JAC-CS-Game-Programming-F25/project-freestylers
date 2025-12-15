@@ -64,44 +64,57 @@ export default class PlayState extends State {
                 const bodyA = pairs[i].bodyA;
                 const bodyB = pairs[i].bodyB;
                 
-                // Check if a bullet collided with a character
-                if (bodyA.label === 'bullet' && bodyB.label === 'character') {
-                    // Find the bullet in our bullets array
-                    const bullet = this.bullets.find(b => b.body === bodyA);
-                    if (bullet) {
-                        // Get the character that was hit
-                        const hitCharacter = bodyB.entity || (bodyB === this.player1?.body ? this.player1 : this.player2);
-                        
-                        // Don't hit the shooter
-                        if (bullet.shooter && bullet.shooter === hitCharacter) {
-                            return; // Ignore collision with shooter
-                        }
-                        
-                        // Apply knockback to the character
-                        this.applyKnockback(hitCharacter, bullet);
-                        
-                        bullet.shouldCleanUp = true;
-                        console.log('Bullet hit character');
-                    }
-                } else if (bodyA.label === 'character' && bodyB.label === 'bullet') {
-                    // Find the bullet in our bullets array
-                    const bullet = this.bullets.find(b => b.body === bodyB);
-                    if (bullet) {
-                        // Get the character that was hit
-                        const hitCharacter = bodyA.entity || (bodyA === this.player1?.body ? this.player1 : this.player2);
-                        
-                        // Don't hit the shooter
-                        if (bullet.shooter && bullet.shooter === hitCharacter) {
-                            return; // Ignore collision with shooter
-                        }
-                        
-                        // Apply knockback to the character
-                        this.applyKnockback(hitCharacter, bullet);
-                        
-                        bullet.shouldCleanUp = true;
-                        console.log('Bullet hit character');
-                    }
+                // Check if this pair is a bullet-character collision
+                if ((bodyA.label === 'bullet' && bodyB.label === 'character') ||
+                    (bodyA.label === 'character' && bodyB.label === 'bullet')) {
+
+                    // Normalize which is bullet and which is character
+                    const bulletBody = bodyA.label === 'bullet' ? bodyA : bodyB;
+                    const characterBody = bodyA.label === 'character' ? bodyA : bodyB;
+
+                    // Find the bullet object
+                    const bullet = this.bullets.find(b => b.body === bulletBody);
+                    if (!bullet) return;
+
+                    // Determine the character that was hit
+                    const hitCharacter = characterBody.entity ||
+                        (characterBody === this.player1?.body ? this.player1 : this.player2);
+
+                    // Ignore if bullet hit its shooter
+                    if (bullet.shooter && bullet.shooter === hitCharacter) return;
+
+                    // Apply knockback
+                    this.applyKnockback(hitCharacter, bullet);
+
+                    // Mark bullet for cleanup
+                    bullet.shouldCleanUp = true;
                 }
+
+                // Check if this pair is a character-powerUp collision
+                if ((bodyA.label === 'character' && bodyB.label === 'powerUp') ||
+                    (bodyA.label === 'powerUp' && bodyB.label === 'character')) {
+
+                    // Normalize which is character and which is powerUp
+                    const characterBody = bodyA.label === 'character' ? bodyA : bodyB;
+                    const powerUpBody = bodyA.label === 'powerUp' ? bodyA : bodyB;
+
+                    // Find the powerUp object in our array
+                    const powerUp = this.powerUps.find(p => p.body === powerUpBody);
+                    if (!powerUp) return;
+
+                    // Determine which character collected it
+                    const player = characterBody === this.player1?.body ? this.player1 : this.player2;
+
+                    // Apply the powerUp effect
+                    powerUp.collect(player);
+
+                    // Remove powerUp from the world and array
+                    Matter.World.remove(world, powerUp.body);
+                    this.powerUps = this.powerUps.filter(p => p !== powerUp);
+
+                    console.log(`${powerUp.constructor.name} collected by ${player === this.player1 ? 'Player 1' : 'Player 2'}`);
+                }
+
             }
         });
     }
@@ -255,7 +268,7 @@ export default class PlayState extends State {
 
     generatePowerUp() {
         console.log("generatePowerUp called");
-        const x = 60 + Math.random() * (CANVAS_WIDTH - 120);
+        const x = 100 + Math.random() * (CANVAS_WIDTH - 200);
         const y = -80;
 
         const powerUp = PowerUpFactory.createPowerUp(x, y);
