@@ -193,12 +193,6 @@ export default class Character extends Rectangle {
         matter.Body.setAngularVelocity(this.body, 0);
         matter.Body.setDensity(this.body, Character.DENSITY);
 
-        const factor = this.originalScale / this.scale; // calculate factor relative to current scale
-        matter.Body.scale(this.body, factor, factor);
-        this.scale = this.originalScale;
-        this.prevScale = this.originalScale;
-        this.scaleTween.value = this.originalScale;
-
         this.jumpPower = Character.JUMP_POWER;
         
         // Wake up the body in case it was sleeping
