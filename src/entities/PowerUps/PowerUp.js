@@ -1,6 +1,7 @@
 import Rectangle from '../Rectangle.js';
 import Sprite from '../../../lib/Sprite.js';
 import { images } from '../../globals.js';
+import { timer } from '../../globals.js';
 
 export default class PowerUp extends Rectangle {
     constructor(x, y, width, height, name) {
@@ -23,6 +24,13 @@ export default class PowerUp extends Rectangle {
                 height
             ),
         ];
+    }
+
+    addTask(onPowerUpEnd) {
+        timer.addTask(
+            () => {}, 0, this.duration,
+            onPowerUpEnd
+        );
     }
 
     /**

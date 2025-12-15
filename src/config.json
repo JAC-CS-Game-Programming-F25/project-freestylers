@@ -61,10 +61,16 @@
 		"height": 3
 	},
 	{
-		"name": "big-jump",
-		"path": "./assets/images/PowerUps/PowerUps.png",
-		"width": 1800,
-		"height": 1200
+		"name": "jump-boost",
+		"path": "./assets/images/PowerUps/jump-boost.png",
+		"width": 32,
+		"height": 32
+	},
+	{
+		"name": "weight-boost",
+		"path": "./assets/images/PowerUps/weight-boost.jpg",
+		"width": 28,
+		"height": 30
 	}
 ],
 	"fonts": [

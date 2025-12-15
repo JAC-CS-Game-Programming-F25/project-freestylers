@@ -10,7 +10,8 @@ const ImageName = {
   AK: 'ak',
   LaserBullet: 'laser-bullet',
   AKBullet: 'ak-bullet',
-  BigJump: 'big-jump'
+  JumpBoost: 'jump-boost',
+  WeightBoost: 'weight-boost'
 };
 
 export default ImageName;

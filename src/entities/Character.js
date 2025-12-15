@@ -6,6 +6,8 @@ export default class Character extends Rectangle {
 	static WIDTH = 16;
     static HEIGHT = 36;
     static MAX_TILT = 0.35;
+    static JUMP_POWER = 0.03;
+    static DENSITY = 0.002;
     
     constructor(x, y, sprites, flipped, gun = null) {
 		super(
@@ -14,7 +16,7 @@ export default class Character extends Rectangle {
 			Character.WIDTH,
 			Character.HEIGHT,
 			{
-				density: 0.002,
+				density: Character.DENSITY,
 				friction: 0.5,
 				restitution: 0.2,
 				label: 'character',
@@ -30,7 +32,7 @@ export default class Character extends Rectangle {
 
 		this.isAlive = true;
 
-		this.jumpPower = 0.03;
+		this.jumpPower = Character.JUMP_POWER;
 
 		this.gun = gun;
 
@@ -169,6 +171,9 @@ export default class Character extends Rectangle {
         matter.Body.setVelocity(this.body, { x: 0, y: 0 });
         matter.Body.setAngle(this.body, 0);
         matter.Body.setAngularVelocity(this.body, 0);
+        matter.Body.setDensity(this.body, Character.DENSITY);
+
+        this.jumpPower = Character.JUMP_POWER;
         
         // Wake up the body in case it was sleeping
         matter.Body.setStatic(this.body, false);

@@ -5,7 +5,7 @@ import ObstacleFactory from '../services/ObstacleFactory.js';
 import PowerUpFactory from '../services/PowerUpFactory.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
-import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images } from '../globals.js';
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input } from '../globals.js';
 import GunFactory from '../services/GunFactory.js';
 
 const { Engine, Events } = matter;
@@ -132,22 +132,36 @@ export default class PlayState extends State {
 
         const bulletMass = bullet.body.mass;
         const characterMass = character.body.mass;
+        const density = character.body.density; // ~0.002–0.01
 
-        // Momentum transfer
-        const impulseScale = 0.05;
+        // ---- TUNING ----
+        const BASE_KNOCKBACK = 0.8;      // << important
+        const DENSITY_FACTOR = 60;       // higher = more resistance
 
-        const impulseX = (vx * bulletMass / characterMass) * impulseScale;
-        const impulseY = (vy * bulletMass / characterMass) * impulseScale;
+        // Density resistance (clamped so it never kills movement)
+        const resistance = 1 + density * DENSITY_FACTOR;
+
+        const impulseX =
+            (vx / speed) *
+            (bulletMass / characterMass) *
+            BASE_KNOCKBACK /
+            resistance;
+
+        const impulseY =
+            (vy / speed) *
+            (bulletMass / characterMass) *
+            BASE_KNOCKBACK /
+            resistance;
 
         const current = character.body.velocity;
 
         Body.setVelocity(character.body, {
             x: current.x + impulseX,
-            y: current.y + impulseY * 0.3 // damp vertical
+            y: current.y + impulseY * 0.3
         });
+
+        console.log('density:', density, 'resistance:', resistance, 'impulseX:', impulseX);
     }
-
-
 
 
    update(dt) {
@@ -268,7 +282,7 @@ export default class PlayState extends State {
 
     generatePowerUp() {
         console.log("generatePowerUp called");
-        const x = 100 + Math.random() * (CANVAS_WIDTH - 200);
+        const x = 120 + Math.random() * (CANVAS_WIDTH - 240);
         const y = -80;
 
         const powerUp = PowerUpFactory.createPowerUp(x, y);
