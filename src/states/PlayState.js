@@ -2,8 +2,7 @@ import State from '../../lib/State.js';
 import TiledMap from '../objects/TiledMap.js';
 import CharacterFactory from '../services/CharacterFactory.js';
 import ObstacleFactory from '../services/ObstacleFactory.js';
-import LaserGun from '../objects/LaserGun.js';
-import AK47 from '../objects/AK47.js';
+import PowerUpFactory from '../services/PowerUpFactory.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
 import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images, stateMachine} from '../globals.js';
@@ -23,6 +22,7 @@ export default class PlayState extends State {
         this.player1 = null;
         this.player2 = null;
         this.obstacles = [];
+        this.powerUps = [];
         this.bullets = []; 
         this.player1Score = 0;
         this.player2Score = 0;
@@ -58,6 +58,7 @@ export default class PlayState extends State {
         
         // Set up collision detection for bullets hitting characters
         this.setupCollisionDetection();
+        this.generatePowerUp();
     }
     
     setupCollisionDetection() {
@@ -69,44 +70,57 @@ export default class PlayState extends State {
                 const bodyA = pairs[i].bodyA;
                 const bodyB = pairs[i].bodyB;
                 
-                // Check if a bullet collided with a character
-                if (bodyA.label === 'bullet' && bodyB.label === 'character') {
-                    // Find the bullet in our bullets array
-                    const bullet = this.bullets.find(b => b.body === bodyA);
-                    if (bullet) {
-                        // Get the character that was hit
-                        const hitCharacter = bodyB.entity || (bodyB === this.player1?.body ? this.player1 : this.player2);
-                        
-                        // Don't hit the shooter
-                        if (bullet.shooter && bullet.shooter === hitCharacter) {
-                            return; // Ignore collision with shooter
-                        }
-                        
-                        // Apply knockback to the character
-                        this.applyKnockback(hitCharacter, bullet);
-                        
-                        bullet.shouldCleanUp = true;
-                        console.log('Bullet hit character');
-                    }
-                } else if (bodyA.label === 'character' && bodyB.label === 'bullet') {
-                    // Find the bullet in our bullets array
-                    const bullet = this.bullets.find(b => b.body === bodyB);
-                    if (bullet) {
-                        // Get the character that was hit
-                        const hitCharacter = bodyA.entity || (bodyA === this.player1?.body ? this.player1 : this.player2);
-                        
-                        // Don't hit the shooter
-                        if (bullet.shooter && bullet.shooter === hitCharacter) {
-                            return; // Ignore collision with shooter
-                        }
-                        
-                        // Apply knockback to the character
-                        this.applyKnockback(hitCharacter, bullet);
-                        
-                        bullet.shouldCleanUp = true;
-                        console.log('Bullet hit character');
-                    }
+                // Check if this pair is a bullet-character collision
+                if ((bodyA.label === 'bullet' && bodyB.label === 'character') ||
+                    (bodyA.label === 'character' && bodyB.label === 'bullet')) {
+
+                    // Normalize which is bullet and which is character
+                    const bulletBody = bodyA.label === 'bullet' ? bodyA : bodyB;
+                    const characterBody = bodyA.label === 'character' ? bodyA : bodyB;
+
+                    // Find the bullet object
+                    const bullet = this.bullets.find(b => b.body === bulletBody);
+                    if (!bullet) return;
+
+                    // Determine the character that was hit
+                    const hitCharacter = characterBody.entity ||
+                        (characterBody === this.player1?.body ? this.player1 : this.player2);
+
+                    // Ignore if bullet hit its shooter
+                    if (bullet.shooter && bullet.shooter === hitCharacter) return;
+
+                    // Apply knockback
+                    this.applyKnockback(hitCharacter, bullet);
+
+                    // Mark bullet for cleanup
+                    bullet.shouldCleanUp = true;
                 }
+
+                // Check if this pair is a character-powerUp collision
+                if ((bodyA.label === 'character' && bodyB.label === 'powerUp') ||
+                    (bodyA.label === 'powerUp' && bodyB.label === 'character')) {
+
+                    // Normalize which is character and which is powerUp
+                    const characterBody = bodyA.label === 'character' ? bodyA : bodyB;
+                    const powerUpBody = bodyA.label === 'powerUp' ? bodyA : bodyB;
+
+                    // Find the powerUp object in our array
+                    const powerUp = this.powerUps.find(p => p.body === powerUpBody);
+                    if (!powerUp) return;
+
+                    // Determine which character collected it
+                    const player = characterBody === this.player1?.body ? this.player1 : this.player2;
+
+                    // Apply the powerUp effect
+                    powerUp.collect(player);
+
+                    // Remove powerUp from the world and array
+                    Matter.World.remove(world, powerUp.body);
+                    this.powerUps = this.powerUps.filter(p => p !== powerUp);
+
+                    console.log(`${powerUp.constructor.name} collected by ${player === this.player1 ? 'Player 1' : 'Player 2'}`);
+                }
+
             }
         });
     }
@@ -124,22 +138,36 @@ export default class PlayState extends State {
 
         const bulletMass = bullet.body.mass;
         const characterMass = character.body.mass;
+        const density = character.body.density; // ~0.002–0.01
 
-        // Momentum transfer
-        const impulseScale = 0.05;
+        // ---- TUNING ----
+        const BASE_KNOCKBACK = 0.8;      // << important
+        const DENSITY_FACTOR = 60;       // higher = more resistance
 
-        const impulseX = (vx * bulletMass / characterMass) * impulseScale;
-        const impulseY = (vy * bulletMass / characterMass) * impulseScale;
+        // Density resistance (clamped so it never kills movement)
+        const resistance = 1 + density * DENSITY_FACTOR;
+
+        const impulseX =
+            (vx / speed) *
+            (bulletMass / characterMass) *
+            BASE_KNOCKBACK /
+            resistance;
+
+        const impulseY =
+            (vy / speed) *
+            (bulletMass / characterMass) *
+            BASE_KNOCKBACK /
+            resistance;
 
         const current = character.body.velocity;
 
         Body.setVelocity(character.body, {
             x: current.x + impulseX,
-            y: current.y + impulseY * 0.3 // damp vertical
+            y: current.y + impulseY * 0.3
         });
+
+        console.log('density:', density, 'resistance:', resistance, 'impulseX:', impulseX);
     }
-
-
 
 
    update(dt) {
@@ -150,6 +178,7 @@ export default class PlayState extends State {
         }
 
         for (const obstacle of this.obstacles) obstacle.update(dt);
+        for (const powerUp of this.powerUps) powerUp.update(dt);
         for (const bullet of this.bullets) {
             bullet.update(dt)
         }
@@ -237,6 +266,10 @@ export default class PlayState extends State {
             obstacle.render();
         }
 
+        for (const powerUp of this.powerUps) {
+            powerUp.render();
+        }
+
         // Render bullets
         for (const bullet of this.bullets) {
             bullet.render();
@@ -244,15 +277,26 @@ export default class PlayState extends State {
     }
 
     generateObstacle(){
-    console.log("generateObstacle called");
-    const x = Math.random() * CANVAS_WIDTH;
-    const y = -80;
+        console.log("generateObstacle called");
+        const x = Math.random() * CANVAS_WIDTH;
+        const y = -80;
 
-    const obstacle = ObstacleFactory.createRandom(x, y);
-    
-    this.obstacles.push(obstacle);
-    matter.World.add(world, obstacle.body);
-}
+        const obstacle = ObstacleFactory.createRandom(x, y);
+        
+        this.obstacles.push(obstacle);
+        matter.World.add(world, obstacle.body);
+    }
+
+    generatePowerUp() {
+        console.log("generatePowerUp called");
+        const x = 120 + Math.random() * (CANVAS_WIDTH - 240);
+        const y = -80;
+
+        const powerUp = PowerUpFactory.createPowerUp(x, y);
+        
+        this.powerUps.push(powerUp);
+        matter.World.add(world, powerUp.body);
+    }
 
     checkGameOver() {
     if (this.player1Score >= 3 || this.player2Score >= 3) {
@@ -290,8 +334,4 @@ export default class PlayState extends State {
 
         this.scoredthisRound = false;
     }
-
-
-
-
 }

@@ -59,6 +59,24 @@
 		"path": "./assets/images/Guns/ak-bullet.png",
 		"width": 4,
 		"height": 3
+	},
+	{
+		"name": "jump-boost",
+		"path": "./assets/images/PowerUps/jump-boost.png",
+		"width": 32,
+		"height": 32
+	},
+	{
+		"name": "weight-boost",
+		"path": "./assets/images/PowerUps/weight-boost.jpg",
+		"width": 28,
+		"height": 30
+	},
+	{
+		"name": "shrinker",
+		"path": "./assets/images/PowerUps/shrinker.png",
+		"width": 21,
+		"height": 32
 	}
 ],
 	"fonts": [

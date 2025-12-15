@@ -124,6 +124,10 @@ Most images will be used from the following tilesets:
 
 - [Characters](https://craftpix.net/freebies/free-guns-pack-2-for-main-characters-pixel-art/)
 - [Map](https://craftpix.net/freebies/free-industrial-zone-tileset-pixel-art/)
+- [PowerUps](https://craftpix.net/product/implants-for-cyberpunk-32x32-pixel-icons/?num=1&count=59&sq=power%20up&pos=0)
+- [JumpBoost](https://minecraft.wiki/w/Jump_Boost)
+- [WeightBoost](https://www.reddit.com/r/PixelArt/comments/11osd9x/32x32_sweet_food_pack/)
+- [Shrinker](https://www.reddit.com/r/PixelArt/comments/vqwqdd/small_potion/#lightbox)
 
 #### ✏️ Fonts
 
@@ -152,6 +156,6 @@ We will have particles (explosions) coming out when you release the shoot button
 
 PowerUps will spawn randmoly during the rounds, the first one maybe a couple seconds into the round. They are circular, each with their own little icon and you collect them by jumping into them. Once you collect them, their effect will last about 10 seconds. An animation will show when the power up is running out. Each power up, will have a slightly different animation to show that it has been collected.
 
-Big Jump Power Up: increases the player's jump height
-Heavy Power Up: increases the player's density making it harder for the opponent to know them off.
-Get Smaller Power Up: decreases the player's dimensions, making him harder to hit.
+Jump Boost Power Up: increases the player's jump height
+Weight Boost Power Up: increases the player's density making it harder for the opponent to know them off.
+Shrinker Power Up: decreases the player's dimensions, making him harder to hit.
