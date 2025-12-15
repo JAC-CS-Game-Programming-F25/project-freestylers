@@ -54,43 +54,53 @@ export default class PlayerSelectState extends State {
         canvas.removeEventListener('click', this.handleClick);
     }
     
-    handleClick(event) {
-        if (!this.canInteract || this.selectedOption) return;
-        
-        const canvas = event.target;
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-        
-        const floatY = Math.sin(this.floatOffset) * this.floatAmount;
-        
-        // Check if clicked on ONE PLAYER (left side)
-        const onePlayerBounds = {
-            x: this.onePlayerX - 150,
-            y: this.textY - 80 + floatY,
-            width: 300,
-            height: 140
-        };
-        
-        if (mouseX >= onePlayerBounds.x && mouseX <= onePlayerBounds.x + onePlayerBounds.width &&
-            mouseY >= onePlayerBounds.y && mouseY <= onePlayerBounds.y + onePlayerBounds.height) {
-            this.selectOption('one');
-            return;
-        }
-        
-        // Check if clicked on TWO PLAYER (right side)
-        const twoPlayerBounds = {
-            x: this.twoPlayerX - 150,
-            y: this.textY - 80 + floatY,
-            width: 300,
-            height: 140
-        };
-        
-        if (mouseX >= twoPlayerBounds.x && mouseX <= twoPlayerBounds.x + twoPlayerBounds.width &&
-            mouseY >= twoPlayerBounds.y && mouseY <= twoPlayerBounds.y + twoPlayerBounds.height) {
-            this.selectOption('two');
-        }
+   handleClick(event) {
+    if (!this.canInteract || this.selectedOption) return;
+
+    const canvas = event.target;
+    const rect = canvas.getBoundingClientRect();
+
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const mouseX = (event.clientX - rect.left) * scaleX;
+    const mouseY = (event.clientY - rect.top) * scaleY;
+
+    const floatY = Math.sin(this.floatOffset) * this.floatAmount;
+
+    const onePlayerBounds = {
+        x: this.onePlayerX - 150,
+        y: this.textY - 80 + floatY,
+        width: 300,
+        height: 140
+    };
+
+    if (
+        mouseX >= onePlayerBounds.x &&
+        mouseX <= onePlayerBounds.x + onePlayerBounds.width &&
+        mouseY >= onePlayerBounds.y &&
+        mouseY <= onePlayerBounds.y + onePlayerBounds.height
+    ) {
+        this.selectOption('one');
+        return;
     }
+
+    const twoPlayerBounds = {
+        x: this.twoPlayerX - 150,
+        y: this.textY - 80 + floatY,
+        width: 300,
+        height: 140
+    };
+
+    if (
+        mouseX >= twoPlayerBounds.x &&
+        mouseX <= twoPlayerBounds.x + twoPlayerBounds.width &&
+        mouseY >= twoPlayerBounds.y &&
+        mouseY <= twoPlayerBounds.y + twoPlayerBounds.height
+    ) {
+        this.selectOption('two');
+    }
+}
 
     async animateTextSlideIn() {
         const onePlayerTarget = CANVAS_WIDTH * 0.25;
@@ -137,7 +147,7 @@ export default class PlayerSelectState extends State {
             }
         }
     }
-
+  
     selectOption(option) {
         this.selectedOption = option;
         this.canInteract = false;
