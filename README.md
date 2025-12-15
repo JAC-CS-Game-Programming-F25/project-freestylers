@@ -127,6 +127,7 @@ Most images will be used from the following tilesets:
 - [PowerUps](https://craftpix.net/product/implants-for-cyberpunk-32x32-pixel-icons/?num=1&count=59&sq=power%20up&pos=0)
 - [JumpBoost](https://minecraft.wiki/w/Jump_Boost)
 - [WeightBoost](https://www.reddit.com/r/PixelArt/comments/11osd9x/32x32_sweet_food_pack/)
+- [Shrinker](https://www.reddit.com/r/PixelArt/comments/vqwqdd/small_potion/#lightbox)
 
 #### ✏️ Fonts
 
@@ -157,4 +158,4 @@ PowerUps will spawn randmoly during the rounds, the first one maybe a couple sec
 
 Jump Boost Power Up: increases the player's jump height
 Weight Boost Power Up: increases the player's density making it harder for the opponent to know them off.
-Get Smaller Power Up: decreases the player's dimensions, making him harder to hit.
+Shrinker Power Up: decreases the player's dimensions, making him harder to hit.
