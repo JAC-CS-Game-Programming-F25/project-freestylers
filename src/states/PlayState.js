@@ -4,13 +4,11 @@ import CharacterFactory from '../services/CharacterFactory.js';
 import ObstacleFactory from '../services/ObstacleFactory.js';
 import PowerUpFactory from '../services/PowerUpFactory.js';
 import SoundName from '../enums/SoundName.js';
-import Input from '../../lib/Input.js';
-import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, stateMachine} from '../globals.js';
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, stateMachine} from '../globals.js';
 import GunFactory from '../services/GunFactory.js';
 import renderScore from '../ui/ScoreRenderer.js';
 import GameStateName from '../enums/GameStateName.js';
 import Persistence from '../services/Persistence.js';
-
 
 const { Engine, Events } = matter;
 
@@ -174,7 +172,6 @@ export default class PlayState extends State {
         console.log('density:', density, 'resistance:', resistance, 'impulseX:', impulseX);
     }
 
-
    update(dt) {
         Engine.update(engine);
 
@@ -184,14 +181,11 @@ export default class PlayState extends State {
 
         for (const obstacle of this.obstacles) obstacle.update(dt);
         for (const powerUp of this.powerUps) powerUp.update(dt);
-        for (const bullet of this.bullets) {
-            bullet.update(dt)
-        }
+        for (const bullet of this.bullets) bullet.update(dt)
 
         this.bullets = this.bullets.filter(b => !b.shouldCleanUp);
 
         if (this.player1) this.player1.update(dt);
-
         if (this.player2) this.player2.update(dt);
 
         if (
@@ -213,39 +207,18 @@ export default class PlayState extends State {
         context.fillStyle = '#87CEEB';
         context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        if (this.map) {
-            this.map.render();
-
-            // DEBUG: draw platform hitboxes
-            context.strokeStyle = "rgba(255,0,0,0.5)";
-            context.lineWidth = 1;
-
-            for (const b of this.map.collisionBodies) {
-                context.strokeRect(
-                    b.position.x - this.map.tileWidth / 2,
-                    b.position.y - this.map.tileHeight / 2,
-                    this.map.tileWidth,
-                    this.map.tileHeight
-                );
-            }
-        }
+        if (this.map) this.map.render()
 
         if (this.player1) this.player1.render();
         if (this.player2) this.player2.render();
         
         // Render obstacles
-        for (const obstacle of this.obstacles) {
-            obstacle.render();
-        }
+        for (const obstacle of this.obstacles) obstacle.render()
 
-        for (const powerUp of this.powerUps) {
-            powerUp.render();
-        }
+        for (const powerUp of this.powerUps) powerUp.render()
 
         // Render bullets
-        for (const bullet of this.bullets) {
-            bullet.render();
-        }
+        for (const bullet of this.bullets) bullet.render()
 
         renderScore(this.player1Score, this.player2Score);
     }
@@ -306,6 +279,7 @@ export default class PlayState extends State {
 
     resetRound() {
         this.bullets = [];
+        this.powerUps = [];
 
         this.player1.respawn(150, 130);
         this.player2.respawn(CANVAS_WIDTH - 150, 130);

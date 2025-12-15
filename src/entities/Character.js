@@ -13,7 +13,7 @@ export default class Character extends Rectangle {
     static JUMP_POWER = 0.03;
     static DENSITY = 0.002;
     
-    constructor(x, y, sprites, flipped, playState) {
+    constructor(x, y, sprites, armSprite, flipped, playState) {
 		super(
 			x - Character.WIDTH / 2,
 			y - Character.HEIGHT / 2,
@@ -29,6 +29,8 @@ export default class Character extends Rectangle {
 
         this.stateMachine = this.initializeStateMachine();
         this.playState = playState;
+
+        this.armSprite = armSprite;
 
 		this.width = Character.WIDTH;
 		this.height = Character.HEIGHT;
@@ -170,7 +172,7 @@ export default class Character extends Rectangle {
         this.sprites[this.currentFrame].render(this.renderOffset.x, this.renderOffset.y);
 
         context.rotate(this.armAngle);
-        this.sprites[1].render(this.armOffset.x, this.armOffset.y);
+        this.armSprite.render(this.armOffset.x, this.armOffset.y);
 
         context.scale(1 / this.scale, 1 / this.scale);
         if (this.gun) {

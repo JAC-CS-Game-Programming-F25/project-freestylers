@@ -5,7 +5,7 @@ import PlayerBaseState from './PlayerBaseState.js';
 export default class PlayerJumpingState extends PlayerBaseState {
     constructor(player) {
         super(player);
-        this.animation = new Animation([0, 1], 0.1);
+        this.animation = new Animation([0, 1], 0.1, 1);
     }
 
     enter() {
