@@ -47,8 +47,8 @@ export default class PlayState extends State {
         this.map = new TiledMap(mapData);
         await this.map.preloadTiles();
         
-        this.player1 = CharacterFactory.createCharacter(150, 130, false);
-        this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, true);
+        this.player1 = CharacterFactory.createCharacter(150, 130, false, this);
+        this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, true, this);
 
         //generate a gun that will be used for both players
 
@@ -190,43 +190,10 @@ export default class PlayState extends State {
 
         this.bullets = this.bullets.filter(b => !b.shouldCleanUp);
 
-        // PLAYER 1 CONTROLS
-        if (this.player1) {
-            this.player1.update(dt);
+        if (this.player1) this.player1.update(dt);
 
-            if (input.isKeyPressed(Input.KEYS.W)) this.player1.jump();
+        if (this.player2) this.player2.update(dt);
 
-            if (input.isKeyHeld(Input.KEYS.SPACE)) {
-                if (!this.player1.armRaised) this.player1.raiseArm();
-            } else {
-                if (this.player1.armRaised) {
-                    this.player1.lowerArm();
-                    const shots = this.player1.shoot();
-                    sounds.play(SoundName.LaserShot);
-                    if (shots) this.bullets.push(...(Array.isArray(shots) ? shots : [shots]));
-                }
-            }
-        }
-
-        // PLAYER 2 CONTROLS
-        if (this.player2) {
-            this.player2.update(dt);
-
-            if (input.isKeyPressed(Input.KEYS.ARROW_UP)) this.player2.jump();
-
-            if (input.isKeyHeld(Input.KEYS.O)) {
-                if (!this.player2.armRaised) this.player2.raiseArm();
-            } else {
-                if (this.player2.armRaised) {
-                    this.player2.lowerArm();
-                    const shots = this.player2.shoot();
-                    sounds.play(SoundName.LaserShot);
-                    if (shots) this.bullets.push(...(Array.isArray(shots) ? shots : [shots]));
-                }
-            }
-        }
-
-        // ---- ROUND OVER CHECK ----
         if (
             !this.scoredthisRound &&
             (
@@ -234,7 +201,6 @@ export default class PlayState extends State {
                 (this.player2 && this.player2.isDead())
             )
         ) {
-            console.log("Round scored.");
             this.updateScore();
             this.scoredthisRound = true;
             this.checkGameOver();
@@ -282,6 +248,12 @@ export default class PlayState extends State {
         }
 
         renderScore(this.player1Score, this.player2Score);
+    }
+
+    addBullets(bullets) {
+        for (const bullet of bullets) {
+            this.bullets.push(bullet);
+        }
     }
 
     generateObstacle(){
