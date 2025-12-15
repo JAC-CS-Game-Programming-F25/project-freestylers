@@ -1,5 +1,6 @@
 import AK from '../objects/AK47.js';
 import LaserGun from '../objects/LaserGun.js';
+import Bazooka from '../objects/Bazooka.js';
 
 export default class GunFactory {
     /**
@@ -19,19 +20,48 @@ export default class GunFactory {
     }
 
     /**
-     * Create random gun for a character
+     * Create a Bazooka for a character
      * @param {Character} character - The character who will hold this gun
      */
-    static createGunForBothPlayers(player1, player2, gunType = "") {
-        const selectedGunType = gunType || (Math.random() < 0.5 ? 'laser' : 'ak');
+    static createBazooka(character) {
+        return new Bazooka(character);
+    }
 
-        const gun1 = selectedGunType === 'laser' 
-            ? this.createLaserGun(player1) 
-            : this.createAK(player1);
-            
-        const gun2 = selectedGunType === 'laser' 
-            ? this.createLaserGun(player2) 
-            : this.createAK(player2);
+    /**
+     * Create random gun for both players
+     * @param {Character} player1 - First player character
+     * @param {Character} player2 - Second player character
+     * @param {string} gunType - Optional gun type: 'laser', 'ak', or 'bazooka'
+     */
+    static createGunForBothPlayers(player1, player2, gunType = "") {
+        let selectedGunType = gunType;
+        
+        if (!selectedGunType) {
+            const rand = Math.random();
+            if (rand < 0.33) {
+                selectedGunType = 'laser';
+            } else if (rand < 0.66) {
+                selectedGunType = 'ak';
+            } else {
+                selectedGunType = 'bazooka';
+            }
+        }
+
+        let gun1, gun2;
+        
+        switch(selectedGunType) {
+            case 'laser':
+                gun1 = this.createLaserGun(player1);
+                gun2 = this.createLaserGun(player2);
+                break;
+            case 'bazooka':
+                gun1 = this.createBazooka(player1);
+                gun2 = this.createBazooka(player2);
+                break;
+            default: // 'ak'
+                gun1 = this.createBazooka(player1);
+                gun2 = this.createBazooka(player2);
+        }
         
         return [gun1, gun2];
     }
