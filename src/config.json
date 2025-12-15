@@ -77,7 +77,21 @@
 		"path": "./assets/images/PowerUps/shrinker.png",
 		"width": 21,
 		"height": 32
+	},
+	{
+		"name": "bazooka",
+		"path": "./assets/images/Guns/bazooka.png",
+		"width": 27,
+		"height": 16
+	},
+	{
+		"name": "bazooka-bullet",
+		"path": "./assets/images/Guns/bazooka-bullet.png",
+		"width": 27,
+		"height": 16
 	}
+
+
 ],
 	"fonts": [
 		{
