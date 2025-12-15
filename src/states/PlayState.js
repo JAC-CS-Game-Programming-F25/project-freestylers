@@ -42,8 +42,8 @@ export default class PlayState extends State {
         this.map = new TiledMap(mapData);
         await this.map.preloadTiles();
         
-        this.player1 = CharacterFactory.createCharacter(150, 130, world);
-        this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, world);
+        this.player1 = CharacterFactory.createCharacter(150, 130, false);
+        this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, true);
 
         //generate a gun that will be used for both players
 
@@ -110,52 +110,32 @@ export default class PlayState extends State {
     applyKnockback(character, bullet) {
         if (!character || !character.isAlive) return;
 
-        const { Body, World } = matter;
+        const { Body } = matter;
 
-        const speed = Math.sqrt(
-            bullet.velocityX * bullet.velocityX +
-            bullet.velocityY * bullet.velocityY
-        );
+        const vx = bullet.body.velocity.x;
+        const vy = bullet.body.velocity.y;
 
-        // Detach anchor so character can move
-        if (character.isAttached) {
-            World.remove(world, character.anchor);
-            character.isAttached = false;
-        }
+        const speed = Math.hypot(vx, vy);
+        if (speed < 0.001) return;
 
-        const currentVelocity = character.body.velocity;
+        const bulletMass = bullet.body.mass;
+        const characterMass = character.body.mass;
 
-        if (speed < 0.01) {
-            const knockbackX = bullet.velocityX > 0 ? 3.0 : -3.0;
+        // Momentum transfer
+        const impulseScale = 0.05;
 
-            Body.setVelocity(character.body, {
-                x: currentVelocity.x + knockbackX,
-                y: currentVelocity.y,
-            });
-        } else {
-            const knockbackStrength = 3.0;
+        const impulseX = (vx * bulletMass / characterMass) * impulseScale;
+        const impulseY = (vy * bulletMass / characterMass) * impulseScale;
 
-            const knockbackX = (bullet.velocityX / speed) * knockbackStrength;
-            const knockbackY = (bullet.velocityY / speed) * knockbackStrength;
+        const current = character.body.velocity;
 
-            Body.setVelocity(character.body, {
-                x: currentVelocity.x + knockbackX,
-                y: currentVelocity.y + knockbackY,
-            });
-        }
-
-        // Reattach anchor after delay
-        setTimeout(() => {
-            if (character.isAlive && !character.isAttached) {
-                character.anchor.pointB.x = character.body.position.x;
-                character.anchor.pointB.y =
-                    character.body.position.y + character.colliderHeight / 2;
-
-                World.add(world, character.anchor);
-                character.isAttached = true;
-            }
-        }, 400);
+        Body.setVelocity(character.body, {
+            x: current.x + impulseX,
+            y: current.y + impulseY * 0.3 // damp vertical
+        });
     }
+
+
 
 
    update(dt) {
@@ -196,7 +176,7 @@ export default class PlayState extends State {
 
             if (input.isKeyPressed(Input.KEYS.ARROW_UP)) this.player2.jump();
 
-            if (input.isKeyHeld(Input.KEYS.SHIFT)) {
+            if (input.isKeyHeld(Input.KEYS.O)) {
                 if (!this.player2.armRaised) this.player2.raiseArm();
             } else {
                 if (this.player2.armRaised) {

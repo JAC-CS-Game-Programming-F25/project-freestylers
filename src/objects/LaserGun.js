@@ -18,11 +18,7 @@ export default class LaserGun extends Gun {
      */
     shoot() {
         const spawnPos = this.getBulletSpawnPosition();
-        const angle = this.getGunAngle();
-
-        const direction = this.character.flipped ? 1 : -1
-        const velocityX = Math.sin(angle) * this.bulletSpeed * direction;
-        const velocityY = Math.cos(angle) * this.bulletSpeed;
+        const velocity = this.getBulletVelocity();
 
         const bullet = new Bullet(
             spawnPos.x,
@@ -30,8 +26,9 @@ export default class LaserGun extends Gun {
             this.bulletWidth,
             this.bulletHeight,
             this.bulletSprite,
-            velocityX,
-            velocityY,
+            velocity.x,
+            velocity.y,
+            0.1,
             this.character
         );
 

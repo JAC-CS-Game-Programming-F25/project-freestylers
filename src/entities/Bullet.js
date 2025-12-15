@@ -6,14 +6,7 @@ const { Body } = matter;
 
 export default class Bullet extends Rectangle {
 	constructor(
-		x,
-		y,
-		width,
-		height,
-		spriteImage,
-		velocityX,
-		velocityY,
-		shooter = null
+		x, y, width, height, spriteImage, velocityX, velocityY, density, shooter = null
 	) {
 		super(x, y, width, height, {
 			label: "bullet",
@@ -21,7 +14,7 @@ export default class Bullet extends Rectangle {
 			friction: 0,
 			frictionAir: 0.001,
 			restitution: 0,
-			density: 0.55,
+			density: density,
 		});
 
 		this.velocityX = velocityX;

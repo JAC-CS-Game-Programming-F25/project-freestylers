@@ -10,7 +10,7 @@ export default class AK extends Gun {
         this.bulletSprite = images.get(ImageName.AKBullet);
         this.bulletWidth = 4;
         this.bulletHeight = 3;
-        this.bulletSpeed = 10;
+        this.bulletSpeed = 15;
     }
 
     /**
@@ -18,48 +18,23 @@ export default class AK extends Gun {
      */
     shoot() {
         const spawnPos = this.getBulletSpawnPosition();
-        const angle = this.getGunAngle();
-        const direction = this.character.flipped ? 1 : -1;
-        const velocityX = Math.sin(angle) * this.bulletSpeed * direction;
-        const velocityY = Math.cos(angle) * this.bulletSpeed;
+        const velocity = this.getBulletVelocity();
 
         const bullets = [];
 
-        // Center bullet
-        bullets.push(new Bullet(
-            spawnPos.x,
-            spawnPos.y,
-            this.bulletWidth,
-            this.bulletHeight,
-            this.bulletSprite,
-            velocityX,
-            velocityY,
-            this.character
-        ));
-
-        // Left bullet
-        bullets.push(new Bullet(
-            spawnPos.x - 5,
-            spawnPos.y,
-            this.bulletWidth,
-            this.bulletHeight,
-            this.bulletSprite,
-            velocityX,
-            velocityY,
-            this.character
-        ));
-
-        // Right bullet
-        bullets.push(new Bullet(
-            spawnPos.x + 5,
-            spawnPos.y,
-            this.bulletWidth,
-            this.bulletHeight,
-            this.bulletSprite,
-            velocityX,
-            velocityY,
-            this.character
-        ));
+        for (const offsetX of [-5, 0, 5]) {
+            bullets.push(new Bullet(
+                spawnPos.x + offsetX,
+                spawnPos.y,
+                this.bulletWidth,
+                this.bulletHeight,
+                this.bulletSprite,
+                velocity.x,
+                velocity.y,
+                0.3,
+                this.character
+            ));
+        }
 
         return bullets;
     }

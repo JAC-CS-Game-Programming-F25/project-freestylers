@@ -2,6 +2,8 @@ import Sprite from "../../lib/Sprite.js";
 import { images } from "../globals.js";
 
 export default class Gun {
+    static GUN_BARREL_OFFSET = 10;
+
     /**
      * Base Gun class that all gun types inherit from
      * @param {Character} character - The character holding this gun
@@ -17,13 +19,20 @@ export default class Gun {
     }
 
     /**
-     * Get the world position where bullets should spawn (gun barrel tip)
+     * Get the position where bullets should spawn (gun barrel tip)
      * @returns {{x: number, y: number}} World coordinates of bullet spawn point
      */
     getBulletSpawnPosition() {
-        const x = this.character.body.position.x;
+        const x = this.character.body.position.x + (Gun.GUN_BARREL_OFFSET * this.character.direction);
         const y = this.character.body.position.y;
         
+        return { x, y };
+    }
+
+    getBulletVelocity() {
+        const angle = this.getGunAngle();
+        const x = -Math.sin(angle) * this.bulletSpeed * this.character.direction;
+        const y = Math.cos(angle) * this.bulletSpeed;
         return { x, y };
     }
 
@@ -36,13 +45,10 @@ export default class Gun {
      * @returns {number} Angle in radians
      */
     getGunAngle() {
-        return this.character.armAngle;
+        return this.character.armAngle + this.character.body.angle;
     }
 
     /**
-     * Shoot method - should be overridden by subclasses
-     * Base class does nothing
-     * Subclasses should pass this.character as the shooter parameter to Bullet constructor
      */
     shoot() {
         console.warn('Gun.shoot() called but not implemented. Override this method in subclass.');

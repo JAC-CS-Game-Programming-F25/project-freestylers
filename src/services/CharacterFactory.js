@@ -4,7 +4,7 @@ import Sprite from "../../lib/Sprite.js";
 import ImageName from "../enums/ImageName.js";
 
 export default class CharacterFactory {
-    static createCharacter(x, y) {
+    static createCharacter(x, y, flipped) {
         const idleSprite = new Sprite(
             images.get(ImageName.PunkIdle),
             196, 12, Character.WIDTH, Character.HEIGHT
@@ -14,7 +14,7 @@ export default class CharacterFactory {
             images.get(ImageName.PunkHand), 12, 12, 10, 15
         );
 
-        return new Character(x, y, [idleSprite, armSprite], false);
+        return new Character(x, y, [idleSprite, armSprite], flipped);
     }
 
     /**
