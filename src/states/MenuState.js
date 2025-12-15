@@ -3,7 +3,7 @@ import { context, CANVAS_WIDTH, CANVAS_HEIGHT, input, stateMachine, sounds, time
 import Input from '../../lib/Input.js';
 import SoundName from '../enums/SoundName.js';
 import Easing from '../../lib/Easing.js';
-import PlayerSelectState from './PlayerSelectState.js';
+import GameStateName from '../enums/GameStateName.js';
 
 export default class MenuState extends State {
     constructor() {
@@ -85,7 +85,7 @@ export default class MenuState extends State {
         );
         
         // Start music and transition
-        stateMachine.change('title');
+        stateMachine.change(GameStateName.PlayerSelect);
     }
 
     update(dt) {
@@ -93,10 +93,12 @@ export default class MenuState extends State {
         if (this.canInteract && (input.isKeyPressed(Input.KEYS.SPACE) || input.isKeyPressed(Input.KEYS.ENTER))) {
             if (!this.playButtonPressed) {
                 this.playButtonPressed = true;
-                 sounds.play(SoundName.FunkyMusic);
                 this.animateTitleFall();
             }
+            sounds.play(SoundName.FunkyMusic);
+
         }
+        
     }
 
     render() {
@@ -126,14 +128,14 @@ export default class MenuState extends State {
         context.fillStyle = "white";
         context.strokeStyle = "black";
         context.lineWidth = 8;   
-        context.strokeText("Platform", CANVAS_WIDTH / 2, this.titleY - 40);
-        context.fillText("Platform", CANVAS_WIDTH / 2, this.titleY - 40);
+        context.strokeText("Rooftop", CANVAS_WIDTH / 2, this.titleY - 40);
+        context.fillText("Rooftop", CANVAS_WIDTH / 2, this.titleY - 40);
         
-        context.strokeText("Shooters", CANVAS_WIDTH / 2, this.titleY + 20);
-        context.fillText("Shooters", CANVAS_WIDTH / 2, this.titleY + 20);
+        context.strokeText("Snipers", CANVAS_WIDTH / 2, this.titleY + 20);
+        context.fillText("Snipers", CANVAS_WIDTH / 2, this.titleY + 20);
     }
 
-    renderPlayButton() {
+   renderPlayButton() {
         const centerX = CANVAS_WIDTH / 2;
         const centerY = CANVAS_HEIGHT / 2 + 80;
         const width = 160;

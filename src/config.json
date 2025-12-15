@@ -82,7 +82,7 @@
 			"path": "./assets/sounds/funkymusic.wav",
 			"size": 1,
 			"volume": 0.5,
-			"playbackRate": 1.5,
+			"playbackRate": 1,
 			"loop": true
 		},
 		{
