@@ -5,6 +5,7 @@ import Character from "../Character.js";
 export default class WeightBoost extends PowerUp {
     constructor(x, y, width, height, name) {
         super(x, y, width, height, name);
+        this.glowColor = 'rgba(247, 0, 255, 1)';
     }
 
     collect(player) {

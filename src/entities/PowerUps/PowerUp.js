@@ -12,8 +12,11 @@ export default class PowerUp extends Rectangle {
             frictionAir: 0.9,
             label: 'powerUp',
         });
+        
         this.duration = 10;
         this.currentFrame = 0;
+        this.glowRadius = width/2;
+        this.glowColor = 'rgba(0, 255, 255, 1)';
 
         this.sprites = [
             new Sprite(
@@ -41,4 +44,34 @@ export default class PowerUp extends Rectangle {
     collect(player) {
         throw new Error("collect() must be implemented in subclass");
     }
+
+    render() {
+        const ctx = this.sprites[0].graphic.context;
+        
+        const { x, y } = this.body.position;
+
+        ctx.save();
+
+        ctx.globalAlpha = 0.6;
+        ctx.strokeStyle = this.glowColor;
+        ctx.lineWidth = 2;
+
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.glowColor;
+
+        ctx.beginPath();
+        ctx.arc(x, y, this.glowRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(x, y);
+        this.sprites[0].render(
+            -this.width / 2,
+            -this.height / 2
+        );
+        ctx.restore();
+    }
+
 }

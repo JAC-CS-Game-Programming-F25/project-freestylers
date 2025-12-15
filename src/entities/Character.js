@@ -25,6 +25,9 @@ export default class Character extends Rectangle {
 
 		this.width = Character.WIDTH;
 		this.height = Character.HEIGHT;
+        this.scale = 1;
+        this.prevScale = 1;
+        this.scaleTween = { value: 1 };
 
 		this.sprites = sprites;
 		this.flipped = flipped;
@@ -108,25 +111,46 @@ export default class Character extends Rectangle {
         Body.applyForce(this.body, this.body.position, jumpForce);
     }
 
+    applyScale() {
+        const factor = this.scaleTween.value / this.prevScale;
+
+        if (Math.abs(factor - 1) > 0.0001) {
+            matter.Body.scale(this.body, factor, factor);
+            this.prevScale = this.scaleTween.value;
+            this.scale = this.scaleTween.value; // for rendering
+        }
+    }
+
+
     render() {
         if (!this.isAlive) return;
-        // we wont call super.render since we want to render multiple sprites together, ie the body, the arm and the gun
 
         context.save();
-		context.translate(this.body.position.x, this.body.position.y);
+        context.translate(this.body.position.x, this.body.position.y);
         context.rotate(this.body.angle);
+
         if (this.flipped) {
             context.scale(-1, 1);
         }
-		this.sprites[this.currentFrame].render(this.renderOffset.x, this.renderOffset.y);
+
+        // 🔽 visual scale
+        context.scale(this.scale, this.scale);
+
+        this.sprites[this.currentFrame].render(this.renderOffset.x, this.renderOffset.y);
+
         context.rotate(this.armAngle);
         this.sprites[1].render(this.armOffset.x, this.armOffset.y);
+
+        context.scale(1 / this.scale, 1 / this.scale);
         if (this.gun) {
             context.rotate(Math.PI / 2);
             this.gun.sprite.render(this.gunOffset.x, this.gunOffset.y);
         }
-		context.restore();
+
+        context.restore();
     }
+
+
 
 
     setGun(gun) {
