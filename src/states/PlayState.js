@@ -9,6 +9,7 @@ import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, in
 import GunFactory from '../services/GunFactory.js';
 import renderScore from '../ui/ScoreRenderer.js';
 import GameStateName from '../enums/GameStateName.js';
+import Persistence from '../services/Persistence.js';
 
 
 const { Engine, Events } = matter;
@@ -21,14 +22,16 @@ export default class PlayState extends State {
         this.player2 = null;
         this.obstacles = [];
         this.powerUps = [];
-        this.bullets = []; 
-        this.player1Score = 0;
-        this.player2Score = 0;
+        this.bullets = [];
         this.winner = null;
         this.scoredthisRound = false;
     }
 
     async enter() {
+        const savedScores = Persistence.loadScores();
+        this.player1Score = savedScores.player1Score || 0;
+        this.player2Score = savedScores.player2Score || 0;
+
         sounds.stop(SoundName.FunkyMusic);
         engine.world.gravity.x = 0;
         engine.world.gravity.y = 1;
@@ -273,6 +276,8 @@ export default class PlayState extends State {
         for (const bullet of this.bullets) {
             bullet.render();
         }
+
+        renderScore(this.player1Score, this.player2Score);
     }
 
     generateObstacle(){
@@ -298,28 +303,28 @@ export default class PlayState extends State {
     }
 
     checkGameOver() {
-    if (this.player1Score >= 3 || this.player2Score >= 3) {
-        const winner =
-            this.player1Score > this.player2Score ? 'blue' : 'red';
+        if (this.player1Score >= 3 || this.player2Score >= 3) {
+            const winner =
+                this.player1Score > this.player2Score ? 'blue' : 'red';
 
-        stateMachine.change(GameStateName.Victory, {
-            winner,
-            blueScore: this.player1Score,
-            redScore: this.player2Score
-        });
+            stateMachine.change(GameStateName.Victory, {
+                winner,
+                blueScore: this.player1Score,
+                redScore: this.player2Score
+            });
+        }
     }
-}
 
 
-   updateScore() {
-        if (this.player1.isDead()){
+    updateScore() {
+        if (this.player1.isDead()) {
             this.player2Score++;
-            console.log("Player 1 score = " + this.player1Score + " | Player 2 score = " + this.player2Score);
-        } 
-        else if (this.player2.isDead()){
+        } else if (this.player2.isDead()) {
             this.player1Score++;
-        } 
+        }
+        Persistence.saveScores(this.player1Score, this.player2Score);
     }
+
     resetRound() {
         console.log("Resetting round...");
 
