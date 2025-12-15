@@ -1,4 +1,8 @@
+import StateMachine from '../../lib/StateMachine.js';
+import PlayerStateName from '../enums/PlayerStateName.js';
 import { CANVAS_HEIGHT, context, matter } from '../globals.js';
+import PlayerIdlingState from '../states/player/PlayerIdlingState.js';
+import PlayerJumpingState from '../states/player/PlayerJumpingState.js';
 import Rectangle from './Rectangle.js';
 
 const { Body } = matter;
@@ -9,7 +13,7 @@ export default class Character extends Rectangle {
     static JUMP_POWER = 0.03;
     static DENSITY = 0.002;
     
-    constructor(x, y, sprites, flipped, gun = null) {
+    constructor(x, y, sprites, armSprite, flipped, playState) {
 		super(
 			x - Character.WIDTH / 2,
 			y - Character.HEIGHT / 2,
@@ -22,6 +26,11 @@ export default class Character extends Rectangle {
 				label: 'character',
 			}
 		);
+
+        this.stateMachine = this.initializeStateMachine();
+        this.playState = playState;
+
+        this.armSprite = armSprite;
 
 		this.width = Character.WIDTH;
 		this.height = Character.HEIGHT;
@@ -37,8 +46,6 @@ export default class Character extends Rectangle {
 
 		this.jumpPower = Character.JUMP_POWER;
 
-		this.gun = gun;
-
 		this.armRaised = false;
 		this.armAngle = 0;
 		this.armTargetAngle = 0;
@@ -48,6 +55,23 @@ export default class Character extends Rectangle {
         this.gunOffset = { x: -2, y: -9 }
 
         this.isGrounded = true;
+        this.currentAnimation =
+			this.stateMachine.currentState.animation[this.direction];
+	}
+
+    initializeStateMachine() {
+		const stateMachine = new StateMachine();
+
+		stateMachine.add(PlayerStateName.Idling, new PlayerIdlingState(this));
+		stateMachine.add(PlayerStateName.Jumping, new PlayerJumpingState(this));
+
+		stateMachine.change(PlayerStateName.Idling);
+
+		return stateMachine;
+	}
+
+    changeState(state, params) {
+		this.stateMachine?.change(state, params);
 	}
 
     update(dt) {
@@ -72,6 +96,14 @@ export default class Character extends Rectangle {
         if (this.gun) {
             this.gun.update(dt);
         }
+
+        this.stateMachine.update(dt);
+
+        // Update current animation frame
+        if (this.currentAnimation) {
+            this.currentAnimation.update(dt);
+            this.currentFrame = this.currentAnimation.getCurrentFrame();
+        }
     }
 
     raiseArm() {
@@ -86,10 +118,12 @@ export default class Character extends Rectangle {
 
     // Shoot and return the bullet (PlayState will manage it)
     shoot() {
-        if (this.gun) {
-            return this.gun.shoot();
-        }
-        return null;
+        if (!this.gun) return;
+
+        const shots = this.gun.shoot();
+        if (!shots) return;
+
+        this.playState.addBullets(shots);
     }
 
     jump() {
@@ -138,7 +172,7 @@ export default class Character extends Rectangle {
         this.sprites[this.currentFrame].render(this.renderOffset.x, this.renderOffset.y);
 
         context.rotate(this.armAngle);
-        this.sprites[1].render(this.armOffset.x, this.armOffset.y);
+        this.armSprite.render(this.armOffset.x, this.armOffset.y);
 
         context.scale(1 / this.scale, 1 / this.scale);
         if (this.gun) {
