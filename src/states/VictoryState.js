@@ -86,24 +86,24 @@ export default class VictoryState extends State {
 		const { x, y } = this.getMousePos(event);
 
 		if (this.playAgainHovered) {
-			Persistence.saveScores(0, 0);
+			Persistence.resetScore();
 			stateMachine.change(GameStateName.Play);
 		}
 
 		if (this.menuHovered) {
 			sounds.stop(SoundName.EpicBackgroundMusic);
-			Persistence.saveScores(0, 0);
+			Persistence.resetScore();
 			stateMachine.change(GameStateName.Menu);
 		}
 	}
 
 	update() {
 		if (input.isKeyPressed(Input.KEYS.ENTER)) {
-			Persistence.saveScores(0, 0);
+			Persistence.resetScore();
 			stateMachine.change(GameStateName.Play);
 		}
 		if (input.isKeyPressed(Input.KEYS.ESCAPE)) {
-			Persistence.saveScores(0, 0);
+			Persistence.resetScore();
 			stateMachine.change(GameStateName.Menu);
 		}
 	}

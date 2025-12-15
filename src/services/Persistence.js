@@ -12,21 +12,26 @@ export default class Persistence {
         return raw ? JSON.parse(raw) : null;
     }
 
-    static saveScores(player1Score, player2Score) {
-        localStorage.setItem('game-scores', JSON.stringify({
-            player1Score,
-            player2Score,
-            timestamp: Date.now()
-        }));
+    static saveGameInfo(info = {}) {
+        const existing = Persistence.loadGameInfo() || {};
+        const merged = { ...existing, ...info, timestamp: Date.now() };
+        localStorage.setItem('game-info', JSON.stringify(merged));
     }
 
-    static loadScores() {
-        const raw = localStorage.getItem('game-scores');
-        return raw ? JSON.parse(raw) : { player1Score: 0, player2Score: 0 };
+    static resetScore() {
+        this.saveGameInfo({
+            player1Score: 0,
+            player2Score: 0
+        });
+    }
+
+    static loadGameInfo() {
+        const raw = localStorage.getItem('game-info');
+        return raw ? JSON.parse(raw) : {};
     }
 
     static clear() {
         localStorage.removeItem('game-state');
-        localStorage.removeItem('game-scores');
+        localStorage.removeItem('game-info');
     }
 }

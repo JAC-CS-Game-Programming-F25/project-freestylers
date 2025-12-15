@@ -28,9 +28,9 @@ export default class PlayState extends State {
     }
 
     async enter() {
-        const savedScores = Persistence.loadScores();
-        this.player1Score = savedScores.player1Score || 0;
-        this.player2Score = savedScores.player2Score || 0;
+        const savedInfo = Persistence.loadGameInfo();
+        this.player1Score = savedInfo.player1Score || 0;
+        this.player2Score = savedInfo.player2Score || 0;
 
         sounds.stop(SoundName.FunkyMusic);
         engine.world.gravity.x = 0;
@@ -52,10 +52,14 @@ export default class PlayState extends State {
 
         //generate a gun that will be used for both players
 
-        const [gun1, gun2] = GunFactory.createGunForBothPlayers(this.player1, this.player2);
+        const savedGunType = savedInfo.gunType || '';
+        const [gun1, gun2] = GunFactory.createGunForBothPlayers(this.player1, this.player2, savedGunType);
+
         this.player1.setGun(gun1);
         this.player2.setGun(gun2);
-        console.log('Game ready! Player 1: W to jump, SPACE to aim/shoot | Player 2: UP ARROW to jump, SHIFT to aim/shoot');
+
+        // Save gun type for future persistence
+        Persistence.saveGameInfo({ gunType: gun1.type });
         
         // Set up collision detection for bullets hitting characters
         this.setupCollisionDetection();
@@ -322,12 +326,13 @@ export default class PlayState extends State {
         } else if (this.player2.isDead()) {
             this.player1Score++;
         }
-        Persistence.saveScores(this.player1Score, this.player2Score);
+        Persistence.saveGameInfo({
+            player1Score: this.player1Score,
+            player2Score: this.player2Score
+        });
     }
 
     resetRound() {
-        console.log("Resetting round...");
-
         this.bullets = [];
 
         this.player1.respawn(150, 130);

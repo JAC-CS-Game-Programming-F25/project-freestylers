@@ -11,6 +11,7 @@ export default class AK extends Gun {
         this.bulletWidth = 4;
         this.bulletHeight = 3;
         this.bulletSpeed = 15;
+        this.type = 'ak';
     }
 
     /**
