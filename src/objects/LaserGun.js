@@ -5,8 +5,7 @@ import ImageName from "../enums/ImageName.js";
 
 export default class LaserGun extends Gun {
     constructor(character) {
-        const gunSprite = images.get(ImageName.LaserGun);
-        super(character, gunSprite, 14, 10);
+        super(character, ImageName.LaserGun, 14, 10);
         // Handle both raw images and objects with .image property
         this.bulletSprite = images.get(ImageName.LaserBullet);
         this.bulletWidth = 8;
@@ -36,7 +35,7 @@ export default class LaserGun extends Gun {
             this.character
         );
 
-        return bullet;
+        return [bullet];
     }
 
 }

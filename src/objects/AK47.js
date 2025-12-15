@@ -5,8 +5,7 @@ import ImageName from "../enums/ImageName.js";
 
 export default class AK extends Gun {
     constructor(character) {
-        const gunSprite = images.get(ImageName.AK);
-        super(character, gunSprite, 14, 10);
+        super(character, ImageName.AK, 28, 10);
         
         this.bulletSprite = images.get(ImageName.AKBullet);
         this.bulletWidth = 4;

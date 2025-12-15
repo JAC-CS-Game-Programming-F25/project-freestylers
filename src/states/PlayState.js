@@ -42,8 +42,8 @@ export default class PlayState extends State {
         this.map = new TiledMap(mapData);
         await this.map.preloadTiles();
         
-        this.player1 = CharacterFactory.createCyborg(150, 130, world);
-        this.player2 = CharacterFactory.createPunk(CANVAS_WIDTH - 150, 130, world);
+        this.player1 = CharacterFactory.createCharacter(150, 130, world);
+        this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, world);
 
         //generate a gun that will be used for both players
 
@@ -166,7 +166,9 @@ export default class PlayState extends State {
         }
 
         for (const obstacle of this.obstacles) obstacle.update(dt);
-        for (const bullet of this.bullets) bullet.update(dt);
+        for (const bullet of this.bullets) {
+            bullet.update(dt)
+        }
 
         this.bullets = this.bullets.filter(b => !b.shouldCleanUp);
 
@@ -222,39 +224,39 @@ export default class PlayState extends State {
         }
     }
    render() {
-    context.fillStyle = '#87CEEB';
-    context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        context.fillStyle = '#87CEEB';
+        context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    if (this.map) {
-        this.map.render();
+        if (this.map) {
+            this.map.render();
 
-        // DEBUG: draw platform hitboxes
-        context.strokeStyle = "rgba(255,0,0,0.5)";
-        context.lineWidth = 1;
+            // DEBUG: draw platform hitboxes
+            context.strokeStyle = "rgba(255,0,0,0.5)";
+            context.lineWidth = 1;
 
-        for (const b of this.map.collisionBodies) {
-            context.strokeRect(
-                b.position.x - this.map.tileWidth / 2,
-                b.position.y - this.map.tileHeight / 2,
-                this.map.tileWidth,
-                this.map.tileHeight
-            );
+            for (const b of this.map.collisionBodies) {
+                context.strokeRect(
+                    b.position.x - this.map.tileWidth / 2,
+                    b.position.y - this.map.tileHeight / 2,
+                    this.map.tileWidth,
+                    this.map.tileHeight
+                );
+            }
+        }
+
+        if (this.player1) this.player1.render();
+        if (this.player2) this.player2.render();
+        
+        // Render obstacles
+        for (const obstacle of this.obstacles) {
+            obstacle.render();
+        }
+
+        // Render bullets
+        for (const bullet of this.bullets) {
+            bullet.render();
         }
     }
-
-    if (this.player1) this.player1.render();
-    if (this.player2) this.player2.render();
-    
-    // Render obstacles
-    for (const obstacle of this.obstacles) {
-        obstacle.render();
-    }
-
-    // Render bullets
-    for (const bullet of this.bullets) {
-        bullet.render();
-    }
-}
 
     generateObstacle(){
     console.log("generateObstacle called");

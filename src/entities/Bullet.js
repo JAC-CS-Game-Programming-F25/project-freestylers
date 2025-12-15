@@ -53,7 +53,6 @@ export default class Bullet extends Rectangle {
 	update(dt) {
 		super.update(dt);
 
-		// Force straight-line movement (ignore gravity)
 		Body.setVelocity(this.body, {
 			x: this.velocityX,
 			y: this.velocityY,

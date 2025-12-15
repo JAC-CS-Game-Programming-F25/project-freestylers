@@ -1,22 +1,29 @@
-import Cyborg from '../entities/Cyborg.js';
-import Punk from '../entities/Punk.js';
+import Character from "../entities/Character.js";
+import { images } from "../globals.js";
+import Sprite from "../../lib/Sprite.js";
+import ImageName from "../enums/ImageName.js";
 
 export default class CharacterFactory {
-    static createCyborg(x, y, world) {
-        return new Cyborg(x, y, world);
-    }
+    static createCharacter(x, y) {
+        const idleSprite = new Sprite(
+            images.get(ImageName.PunkIdle),
+            196, 12, Character.WIDTH, Character.HEIGHT
+        );
 
-    static createPunk(x, y, world) {
-        return new Punk(x, y, world);
+        const armSprite = new Sprite(
+            images.get(ImageName.PunkHand), 12, 12, 10, 15
+        );
+
+        return new Character(x, y, [idleSprite, armSprite], false);
     }
 
     /**
      * Create random character
      */
-    static createRandom(x, y, world) {
+    static createRandom(x, y) {
         const types = [
-            () => CharacterFactory.createCyborg(x, y, world),
-            () => CharacterFactory.createPunk(x, y, world),
+            () => CharacterFactory.createCharacter(x, y),
+            () => CharacterFactory.createCharacter(x, y),
         ];
         
         const randomIndex = Math.floor(Math.random() * types.length);

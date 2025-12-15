@@ -52,7 +52,7 @@ stateMachine.add(GameStateName.GameOver, new GameOverState());
 stateMachine.add(GameStateName.Victory, new VictoryState());
 stateMachine.add(GameStateName.Play, new PlayState());
 
-stateMachine.change(GameStateName.TitleScreen);
+stateMachine.change(GameStateName.Play);
 
 const game = new Game(
 	stateMachine,
