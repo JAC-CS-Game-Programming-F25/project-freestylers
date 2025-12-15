@@ -124,6 +124,7 @@ Most images will be used from the following tilesets:
 
 - [Characters](https://craftpix.net/freebies/free-guns-pack-2-for-main-characters-pixel-art/)
 - [Map](https://craftpix.net/freebies/free-industrial-zone-tileset-pixel-art/)
+- [PowerUps](https://craftpix.net/product/implants-for-cyberpunk-32x32-pixel-icons/?num=1&count=59&sq=power%20up&pos=0)
 
 #### ✏️ Fonts
 

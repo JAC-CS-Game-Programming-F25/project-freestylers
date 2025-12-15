@@ -59,6 +59,12 @@
 		"path": "./assets/images/Guns/ak-bullet.png",
 		"width": 4,
 		"height": 3
+	},
+	{
+		"name": "big-jump",
+		"path": "./assets/images/PowerUps/PowerUps.png",
+		"width": 1800,
+		"height": 1200
 	}
 ],
 	"fonts": [

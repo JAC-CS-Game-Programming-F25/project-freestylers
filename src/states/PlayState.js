@@ -2,13 +2,10 @@ import State from '../../lib/State.js';
 import TiledMap from '../objects/TiledMap.js';
 import CharacterFactory from '../services/CharacterFactory.js';
 import ObstacleFactory from '../services/ObstacleFactory.js';
-import LaserGun from '../objects/LaserGun.js';
-import AK47 from '../objects/AK47.js';
+import PowerUpFactory from '../services/PowerUpFactory.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
 import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images } from '../globals.js';
-import ImageName from '../enums/ImageName.js';
-import AK from '../objects/AK47.js';
 import GunFactory from '../services/GunFactory.js';
 
 const { Engine, Events } = matter;
@@ -20,6 +17,7 @@ export default class PlayState extends State {
         this.player1 = null;
         this.player2 = null;
         this.obstacles = [];
+        this.powerUps = [];
         this.bullets = []; 
         this.player1Score = 0;
         this.player2Score = 0;
@@ -54,6 +52,7 @@ export default class PlayState extends State {
         
         // Set up collision detection for bullets hitting characters
         this.setupCollisionDetection();
+        this.generatePowerUp();
     }
     
     setupCollisionDetection() {
@@ -146,6 +145,7 @@ export default class PlayState extends State {
         }
 
         for (const obstacle of this.obstacles) obstacle.update(dt);
+        for (const powerUp of this.powerUps) powerUp.update(dt);
         for (const bullet of this.bullets) {
             bullet.update(dt)
         }
@@ -232,6 +232,10 @@ export default class PlayState extends State {
             obstacle.render();
         }
 
+        for (const powerUp of this.powerUps) {
+            powerUp.render();
+        }
+
         // Render bullets
         for (const bullet of this.bullets) {
             bullet.render();
@@ -239,15 +243,26 @@ export default class PlayState extends State {
     }
 
     generateObstacle(){
-    console.log("generateObstacle called");
-    const x = Math.random() * CANVAS_WIDTH;
-    const y = -80;
+        console.log("generateObstacle called");
+        const x = Math.random() * CANVAS_WIDTH;
+        const y = -80;
 
-    const obstacle = ObstacleFactory.createRandom(x, y);
-    
-    this.obstacles.push(obstacle);
-    matter.World.add(world, obstacle.body);
-}
+        const obstacle = ObstacleFactory.createRandom(x, y);
+        
+        this.obstacles.push(obstacle);
+        matter.World.add(world, obstacle.body);
+    }
+
+    generatePowerUp() {
+        console.log("generatePowerUp called");
+        const x = 60 + Math.random() * (CANVAS_WIDTH - 120);
+        const y = -80;
+
+        const powerUp = PowerUpFactory.createPowerUp(x, y);
+        
+        this.powerUps.push(powerUp);
+        matter.World.add(world, powerUp.body);
+    }
 
     checkGameOver(){
         if(this.player1Score>3 || this.player2Score>3){
@@ -273,8 +288,4 @@ export default class PlayState extends State {
 
         this.scoredthisRound = false;
     }
-
-
-
-
 }
