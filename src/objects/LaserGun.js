@@ -11,6 +11,7 @@ export default class LaserGun extends Gun {
         this.bulletWidth = 8;
         this.bulletHeight = 10;
         this.bulletSpeed = 20; // Very high speed for laser
+        this.type = 'laser';
     }
 
     /**

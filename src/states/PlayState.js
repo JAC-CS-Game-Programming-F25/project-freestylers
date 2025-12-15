@@ -5,12 +5,11 @@ import ObstacleFactory from '../services/ObstacleFactory.js';
 import PowerUpFactory from '../services/PowerUpFactory.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
-import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images, stateMachine} from '../globals.js';
-import ImageName from '../enums/ImageName.js';
-import AK from '../objects/AK47.js';
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, stateMachine} from '../globals.js';
 import GunFactory from '../services/GunFactory.js';
 import renderScore from '../ui/ScoreRenderer.js';
 import GameStateName from '../enums/GameStateName.js';
+import Persistence from '../services/Persistence.js';
 
 
 const { Engine, Events } = matter;
@@ -23,14 +22,16 @@ export default class PlayState extends State {
         this.player2 = null;
         this.obstacles = [];
         this.powerUps = [];
-        this.bullets = []; 
-        this.player1Score = 0;
-        this.player2Score = 0;
+        this.bullets = [];
         this.winner = null;
         this.scoredthisRound = false;
     }
 
     async enter() {
+        const savedInfo = Persistence.loadGameInfo();
+        this.player1Score = savedInfo.player1Score || 0;
+        this.player2Score = savedInfo.player2Score || 0;
+
         sounds.stop(SoundName.FunkyMusic);
         engine.world.gravity.x = 0;
         engine.world.gravity.y = 1;
@@ -51,10 +52,14 @@ export default class PlayState extends State {
 
         //generate a gun that will be used for both players
 
-        const [gun1, gun2] = GunFactory.createGunForBothPlayers(this.player1, this.player2);
+        const savedGunType = savedInfo.gunType || '';
+        const [gun1, gun2] = GunFactory.createGunForBothPlayers(this.player1, this.player2, savedGunType);
+
         this.player1.setGun(gun1);
         this.player2.setGun(gun2);
-        console.log('Game ready! Player 1: W to jump, SPACE to aim/shoot | Player 2: UP ARROW to jump, SHIFT to aim/shoot');
+
+        // Save gun type for future persistence
+        Persistence.saveGameInfo({ gunType: gun1.type });
         
         // Set up collision detection for bullets hitting characters
         this.setupCollisionDetection();
@@ -237,7 +242,8 @@ export default class PlayState extends State {
             setTimeout(() => this.resetRound(), 1500);
         }
     }
-   render() {
+
+    render() {
         context.fillStyle = '#87CEEB';
         context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -274,6 +280,8 @@ export default class PlayState extends State {
         for (const bullet of this.bullets) {
             bullet.render();
         }
+
+        renderScore(this.player1Score, this.player2Score);
     }
 
     generateObstacle(){
@@ -299,31 +307,32 @@ export default class PlayState extends State {
     }
 
     checkGameOver() {
-    if (this.player1Score >= 3 || this.player2Score >= 3) {
-        const winner =
-            this.player1Score > this.player2Score ? 'blue' : 'red';
+        if (this.player1Score >= 3 || this.player2Score >= 3) {
+            const winner =
+                this.player1Score > this.player2Score ? 'blue' : 'red';
 
-        stateMachine.change(GameStateName.Victory, {
-            winner,
-            blueScore: this.player1Score,
-            redScore: this.player2Score
+            stateMachine.change(GameStateName.Victory, {
+                winner,
+                blueScore: this.player1Score,
+                redScore: this.player2Score
+            });
+        }
+    }
+
+
+    updateScore() {
+        if (this.player1.isDead()) {
+            this.player2Score++;
+        } else if (this.player2.isDead()) {
+            this.player1Score++;
+        }
+        Persistence.saveGameInfo({
+            player1Score: this.player1Score,
+            player2Score: this.player2Score
         });
     }
-}
 
-
-   updateScore() {
-        if (this.player1.isDead()){
-            this.player2Score++;
-            console.log("Player 1 score = " + this.player1Score + " | Player 2 score = " + this.player2Score);
-        } 
-        else if (this.player2.isDead()){
-            this.player1Score++;
-        } 
-    }
     resetRound() {
-        console.log("Resetting round...");
-
         this.bullets = [];
 
         this.player1.respawn(150, 130);

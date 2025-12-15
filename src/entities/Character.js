@@ -133,7 +133,6 @@ export default class Character extends Rectangle {
             context.scale(-1, 1);
         }
 
-        // 🔽 visual scale
         context.scale(this.scale, this.scale);
 
         this.sprites[this.currentFrame].render(this.renderOffset.x, this.renderOffset.y);
@@ -149,9 +148,6 @@ export default class Character extends Rectangle {
 
         context.restore();
     }
-
-
-
 
     setGun(gun) {
         this.gun = gun;

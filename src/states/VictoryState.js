@@ -5,6 +5,7 @@ import GameStateName from '../enums/GameStateName.js';
 import Easing from '../../lib/Easing.js';
 import SoundName from '../enums/SoundName.js';
 import renderScore from '../ui/ScoreRenderer.js';
+import Persistence from '../services/Persistence.js';
 
 
 export default class VictoryState extends State {
@@ -85,20 +86,24 @@ export default class VictoryState extends State {
 		const { x, y } = this.getMousePos(event);
 
 		if (this.playAgainHovered) {
+			Persistence.resetScore();
 			stateMachine.change(GameStateName.Play);
 		}
 
 		if (this.menuHovered) {
 			sounds.stop(SoundName.EpicBackgroundMusic);
+			Persistence.resetScore();
 			stateMachine.change(GameStateName.Menu);
 		}
 	}
 
 	update() {
 		if (input.isKeyPressed(Input.KEYS.ENTER)) {
+			Persistence.resetScore();
 			stateMachine.change(GameStateName.Play);
 		}
 		if (input.isKeyPressed(Input.KEYS.ESCAPE)) {
+			Persistence.resetScore();
 			stateMachine.change(GameStateName.Menu);
 		}
 	}
