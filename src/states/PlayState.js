@@ -5,9 +5,7 @@ import ObstacleFactory from '../services/ObstacleFactory.js';
 import PowerUpFactory from '../services/PowerUpFactory.js';
 import SoundName from '../enums/SoundName.js';
 import Input from '../../lib/Input.js';
-import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, images, stateMachine} from '../globals.js';
-import ImageName from '../enums/ImageName.js';
-import AK from '../objects/AK47.js';
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, matter, engine, world, sounds, input, stateMachine} from '../globals.js';
 import GunFactory from '../services/GunFactory.js';
 import renderScore from '../ui/ScoreRenderer.js';
 import GameStateName from '../enums/GameStateName.js';
@@ -237,7 +235,8 @@ export default class PlayState extends State {
             setTimeout(() => this.resetRound(), 1500);
         }
     }
-   render() {
+
+    render() {
         context.fillStyle = '#87CEEB';
         context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 

@@ -27,6 +27,7 @@ import VictoryState from './states/VictoryState.js';
 import TitleScreenState from './states/TitleScreenState.js';
 import PlayerSelectState from './states/PlayerSelectState.js';
 import MenuState from './states/MenuState.js';
+import Persistence from './services/Persistence.js';
 
 // Set the dimensions of the play area.
 canvas.width = CANVAS_WIDTH;
@@ -56,7 +57,12 @@ stateMachine.add(GameStateName.Victory, new VictoryState());
 stateMachine.add(GameStateName.Play, new PlayState());
 stateMachine.add(GameStateName.PlayerSelect, new PlayerSelectState());
 
-stateMachine.change(GameStateName.Play);
+const saved = Persistence.loadCurrentState();
+if (saved) {
+	stateMachine.change(saved.state, saved.payload);
+} else {
+	stateMachine.change(GameStateName.Menu);
+}
 
 const game = new Game(
 	stateMachine,
