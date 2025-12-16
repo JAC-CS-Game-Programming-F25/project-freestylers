@@ -8,7 +8,7 @@ export default class PowerUpFactory {
     static createPowerUp(x, y) {
         // Pick a random number between 0 and 2
         const rand = Math.floor(Math.random() * 3);
-
+        
         switch (rand) {
             case 0:
                 return new JumpBoost(x, y, 32, 32, ImageName.JumpBoost);

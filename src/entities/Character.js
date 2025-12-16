@@ -284,6 +284,11 @@ export default class Character extends Rectangle {
         this.armRaised = false;
         this.armAngle = 0;
         this.armTargetAngle = 0;
+        
+        // Reset scale to normal (1)
+        this.scale = 1;
+        this.prevScale = 1;
+        this.scaleTween.value = 1;
     }
 
     handleHit() {
