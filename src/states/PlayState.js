@@ -10,7 +10,7 @@ import renderScore from '../ui/ScoreRenderer.js';
 import GameStateName from '../enums/GameStateName.js';
 import Persistence from '../services/Persistence.js';
 
-const { Engine, Events } = matter;
+const { Engine, Events, Composite, World } = matter;
 
 export default class PlayState extends State {
     constructor() {
@@ -103,25 +103,18 @@ export default class PlayState extends State {
                 if ((bodyA.label === 'character' && bodyB.label === 'powerUp') ||
                     (bodyA.label === 'powerUp' && bodyB.label === 'character')) {
 
-                    // Normalize which is character and which is powerUp
                     const characterBody = bodyA.label === 'character' ? bodyA : bodyB;
                     const powerUpBody = bodyA.label === 'powerUp' ? bodyA : bodyB;
 
-                    // Find the powerUp object in our array
                     const powerUp = this.powerUps.find(p => p.body === powerUpBody);
                     if (!powerUp) return;
 
-                    // Determine which character collected it
                     const player = characterBody === this.player1?.body ? this.player1 : this.player2;
 
-                    // Apply the powerUp effect
                     powerUp.collect(player);
 
-                    // Remove powerUp from the world and array
-                    Matter.World.remove(world, powerUp.body);
                     this.powerUps = this.powerUps.filter(p => p !== powerUp);
-
-                    console.log(`${powerUp.constructor.name} collected by ${player === this.player1 ? 'Player 1' : 'Player 2'}`);
+                    this.removeBodiesByLabel("powerUp");
                 }
 
             }
@@ -274,6 +267,9 @@ export default class PlayState extends State {
     }
 
     resetRound() {
+        this.removeBodiesByLabel("bullet");
+        this.removeBodiesByLabel("powerUp");
+
         this.bullets = [];
         this.powerUps = [];
 
@@ -284,5 +280,15 @@ export default class PlayState extends State {
         matter.Body.setVelocity(this.player2.body, { x: 0, y: 0 });
 
         this.scoredthisRound = false;
+    }
+
+    removeBodiesByLabel(label) {
+        const bodies = Composite.allBodies(world);
+
+        for (const body of bodies) {
+            if (body.label === label) {
+                World.remove(world, body);
+            }
+        }
     }
 }

@@ -57,7 +57,8 @@ export default class Gun {
         this.shotEffect = new ShotEffect(this.getShotEffectSprites());
     }
 
-    render() {
+    render(x, y) {
+        this.sprite.render(x, y);
         if (this.shotEffect) this.shotEffect.render(Gun.GUN_BARREL_OFFSET.x, Gun.GUN_BARREL_OFFSET.y);
     }
 

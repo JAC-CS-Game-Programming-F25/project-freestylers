@@ -177,8 +177,7 @@ export default class Character extends Rectangle {
         context.scale(1 / this.scale, 1 / this.scale);
         if (this.gun) {
             context.rotate(Math.PI / 2);
-            this.gun.sprite.render(this.gunOffset.x, this.gunOffset.y);
-            this.gun.render();
+            this.gun.render(this.gunOffset.x, this.gunOffset.y);
         }
 
         context.restore();
