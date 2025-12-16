@@ -1,8 +1,9 @@
 import Gun from "./Gun.js";
 import Bullet from "../entities/Bullet.js";
-import { images } from "../globals.js";
+import { images, sounds } from "../globals.js";
 import ImageName from "../enums/ImageName.js";
 import Sprite from "../../lib/Sprite.js";
+import SoundName from "../enums/SoundName.js";
 
 export default class LaserGun extends Gun {
     constructor(character) {
@@ -21,6 +22,7 @@ export default class LaserGun extends Gun {
      */
     shoot() {
         super.shoot();
+        sounds.play(SoundName.LaserShot);
         const spawnPos = this.getBulletSpawnPosition();
         const velocity = this.getBulletVelocity();
 

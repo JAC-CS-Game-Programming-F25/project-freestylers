@@ -95,7 +95,20 @@
 		"path": "./assets/images/Effects/explosion.png",
 		"width": 248,
 		"height": 24
+  },
+		"name": "bazooka",
+		"path": "./assets/images/Guns/bazooka.png",
+		"width": 27,
+		"height": 16
+	},
+	{
+		"name": "bazooka-bullet",
+		"path": "./assets/images/Guns/bazooka-bullet.png",
+		"width": 27,
+		"height": 16
 	}
+
+
 ],
 	"fonts": [
 		{
@@ -135,6 +148,22 @@
 			"size": 1,
 			"volume": 0.5,
 			"playbackRate": 1,
+			"loop": false
+		},
+		{
+			"name": "bazooka-shot",
+			"path": "./assets/sounds/bazooka.wav",
+			"size": 1,
+			"volume": 0.5,
+			"playbackRate": 1,
+			"loop": false
+		},
+		{
+			"name": "ak-shot",
+			"path": "./assets/sounds/ak.wav",
+			"size": 1,
+			"volume": 0.5,
+			"playbackRate": 1.5,
 			"loop": false
 		}
 	]

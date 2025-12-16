@@ -15,7 +15,9 @@ const ImageName = {
   Shrinker: 'shrinker',
   ShotEffect: 'shot-effect',
   LaserEffect: 'laser-effect',
-  Explosion: 'explosion'
+  Explosion: 'explosion',
+  Bazooka: 'bazooka',
+  BazookaBullet: 'bazooka-bullet'
 };
 
 export default ImageName;
