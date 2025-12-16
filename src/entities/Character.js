@@ -15,7 +15,7 @@ export default class Character extends Rectangle {
     static JUMP_POWER = 0.02;
     static DENSITY = 0.002;
     
-    constructor(x, y, sprites, armSprite, flipped, playState) {
+    constructor(x, y, sprites, armSprite, flipped, playState, isAI) {
 		super(
 			x - Character.WIDTH / 2,
 			y - Character.HEIGHT / 2,
@@ -28,6 +28,8 @@ export default class Character extends Rectangle {
 				label: 'character',
 			}
 		);
+
+        this.isAI = isAI;
         
         this.hitFlashTime = 0;
         this.HIT_FLASH_DURATION = 0.12;

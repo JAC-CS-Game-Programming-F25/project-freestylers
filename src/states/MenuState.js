@@ -4,7 +4,11 @@ import Input from '../../lib/Input.js';
 import SoundName from '../enums/SoundName.js';
 import Easing from '../../lib/Easing.js';
 import GameStateName from '../enums/GameStateName.js';
+import Persistence from '../services/Persistence.js';
 
+/**
+ * actually the title screen state...
+ */
 export default class MenuState extends State {
     constructor() {
         super();
@@ -29,6 +33,7 @@ export default class MenuState extends State {
         this.titleY = -100;
         this.titleVisible = true;
         this.canInteract = false;
+        Persistence.clear();
         
         // Animate title dropping and bouncing
         this.animateTitleDrop();

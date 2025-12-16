@@ -32,6 +32,7 @@
             const savedInfo = Persistence.loadGameInfo();
             this.player1Score = savedInfo.player1Score || 0;
             this.player2Score = savedInfo.player2Score || 0;
+            this.playerCount = savedInfo.playerCount;
 
             sounds.stop(SoundName.FunkyMusic);
             engine.world.gravity.x = 0;
@@ -48,8 +49,8 @@
             this.map = new TiledMap(mapData);
             await this.map.preloadTiles();
             
-            this.player1 = CharacterFactory.createCharacter(150, 130, false, this);
-            this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, true, this);
+            this.player1 = CharacterFactory.createCharacter(150, 130, false, this, false);
+            this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, true, this, this.playerCount === 1);
 
             const savedGunType = savedInfo.gunType || '';
             const [gun1, gun2] = GunFactory.createGunForBothPlayers(this.player1, this.player2, savedGunType);

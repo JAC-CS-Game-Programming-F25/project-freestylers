@@ -3,6 +3,7 @@ import { context, CANVAS_WIDTH, CANVAS_HEIGHT, input, stateMachine, timer } from
 import Input from '../../lib/Input.js';
 import Easing from '../../lib/Easing.js';
 import GameStateName from '../enums/GameStateName.js';
+import Persistence from '../services/Persistence.js';
 
 export default class PlayerSelectState extends State {
     constructor() {
@@ -133,16 +134,12 @@ export default class PlayerSelectState extends State {
         // Check for player selection
         if (this.canInteract && !this.selectedOption) {
             // Left side keys for one player (W, A, Shift)
-            if (input.isKeyPressed(Input.KEYS.W) || 
-                input.isKeyPressed(Input.KEYS.A) || 
-                input.isKeyPressed(Input.KEYS.SHIFT)) {
+            if (input.isKeyPressed(Input.KEYS.W)) {
                 this.selectOption('one');
             }
             
             // Right side keys for two players (Arrow Up, Arrow Right, Space)
-            if (input.isKeyPressed(Input.KEYS.ARROW_UP) || 
-                input.isKeyPressed(Input.KEYS.ARROW_RIGHT) ||
-                input.isKeyPressed(Input.KEYS.SPACE)) {
+            if (input.isKeyPressed(Input.KEYS.ARROW_UP)) {
                 this.selectOption('two');
             }
         }
@@ -151,6 +148,8 @@ export default class PlayerSelectState extends State {
     selectOption(option) {
         this.selectedOption = option;
         this.canInteract = false;
+        const playerCount = option === "one" ? 1 : 2;
+        Persistence.saveGameInfo({ playerCount });
         
         // Transition to title screen
         setTimeout(() => {
@@ -236,11 +235,11 @@ export default class PlayerSelectState extends State {
         context.lineWidth = 4;
         
         // Left instruction
-        context.strokeText("Click or press W / SHIFT", CANVAS_WIDTH * 0.25, y);
-        context.fillText("Click or press W / SHIFT", CANVAS_WIDTH * 0.25, y);
+        context.strokeText("Click or press W", CANVAS_WIDTH * 0.25, y);
+        context.fillText("Click or press W", CANVAS_WIDTH * 0.25, y);
         
         // Right instruction
-        context.strokeText("Click or press ↑ / SPACE", CANVAS_WIDTH * 0.75, y);
-        context.fillText("Click or press ↑ / SPACE", CANVAS_WIDTH * 0.75, y);
+        context.strokeText("Click or press UP ARROW", CANVAS_WIDTH * 0.75, y);
+        context.fillText("Click or press UP ARROW", CANVAS_WIDTH * 0.75, y);
     }
 }
