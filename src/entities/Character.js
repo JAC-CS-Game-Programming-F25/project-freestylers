@@ -11,7 +11,7 @@ export default class Character extends Rectangle {
 	static WIDTH = 16;
     static HEIGHT = 36;
     static MAX_TILT = 0.35;
-    static JUMP_POWER = 0.03;
+    static JUMP_POWER = 0.02;
     static DENSITY = 0.002;
     
     constructor(x, y, sprites, armSprite, flipped, playState) {
