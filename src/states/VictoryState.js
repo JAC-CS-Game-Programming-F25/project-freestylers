@@ -122,7 +122,6 @@ export default class VictoryState extends State {
 		this.renderButtons();
 	}
 
-	/* ---------- TOP SCORE ---------- */
 	renderScore() {
 		renderScore(this.blueScore, this.redScore);
 	}
