@@ -89,6 +89,12 @@
 		"path": "./assets/images/Effects/laser-effect.png",
 		"width": 288,
 		"height": 48
+	},
+	{
+		"name": "explosion",
+		"path": "./assets/images/Effects/explosion.png",
+		"width": 248,
+		"height": 24
 	}
 ],
 	"fonts": [

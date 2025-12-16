@@ -123,6 +123,11 @@ export default class PlayState extends State {
     applyKnockback(character, bullet) {
         if (!character || !character.isAlive) return;
 
+        if (bullet.shooter.gun.type === 'ak') {
+            character.handleExplosion();
+            return;
+        }
+
         const { Body } = matter;
 
         const vx = bullet.body.velocity.x;
@@ -264,6 +269,7 @@ export default class PlayState extends State {
     }
 
     resetRound() {
+        console.log('reset round')
         this.removeBodiesByLabel("bullet");
         this.removeBodiesByLabel("powerUp");
 

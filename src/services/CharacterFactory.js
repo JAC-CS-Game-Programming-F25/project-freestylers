@@ -16,16 +16,28 @@ export default class CharacterFactory {
             196, 12, Character.WIDTH, Character.HEIGHT
         );
 
-        const jump1Sprite = new Sprite(
+        const jumpSprite = new Sprite(
             images.get(characterSpriteName),
             100, 12, Character.WIDTH, Character.HEIGHT
         );
+        
+        const FRAME_WIDTH = 30;
+        const FRAME_HEIGHT = 24;
+        const explosionSprites = [];
+        for (let i = 0; i < 8; i++) {
+            explosionSprites.push(
+                new Sprite(
+                    images.get(ImageName.Explosion),
+                    i * FRAME_WIDTH,
+                    0,
+                    FRAME_WIDTH,
+                    FRAME_HEIGHT
+                )
+            );
+        }
 
-        const jump2Sprite = new Sprite(
-            images.get(characterSpriteName),
-            148, 12, Character.WIDTH, Character.HEIGHT
-        );
-        return [idleSprite, jump1Sprite, jump2Sprite];
+
+        return [idleSprite, jumpSprite, ...explosionSprites];
     }
 
     static getArmSprite(armSpriteName) {

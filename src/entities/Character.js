@@ -1,6 +1,7 @@
 import StateMachine from '../../lib/StateMachine.js';
 import PlayerStateName from '../enums/PlayerStateName.js';
 import { CANVAS_HEIGHT, context, matter } from '../globals.js';
+import PlayerExplodingState from '../states/player/PlayerExplodingState.js';
 import PlayerIdlingState from '../states/player/PlayerIdlingState.js';
 import PlayerJumpingState from '../states/player/PlayerJumpingState.js';
 import Rectangle from './Rectangle.js';
@@ -64,6 +65,7 @@ export default class Character extends Rectangle {
 
 		stateMachine.add(PlayerStateName.Idling, new PlayerIdlingState(this));
 		stateMachine.add(PlayerStateName.Jumping, new PlayerJumpingState(this));
+        stateMachine.add(PlayerStateName.Exploding, new PlayerExplodingState(this));
 
 		stateMachine.change(PlayerStateName.Idling);
 
@@ -126,6 +128,11 @@ export default class Character extends Rectangle {
         this.playState.addBullets(shots);
     }
 
+    handleExplosion() {
+        console.log('exploded')
+        this.changeState(PlayerStateName.Exploding);
+    }
+
     jump() {
         if (!this.isGrounded) {
             return;
@@ -159,6 +166,7 @@ export default class Character extends Rectangle {
     render() {
         if (!this.isAlive) return;
 
+        // ---------- Character ----------
         context.save();
         context.translate(this.body.position.x, this.body.position.y);
         context.rotate(this.body.angle);
@@ -169,30 +177,44 @@ export default class Character extends Rectangle {
 
         context.scale(this.scale, this.scale);
 
-        this.sprites[this.currentFrame].render(this.renderOffset.x, this.renderOffset.y);
+        // Body
+        this.sprites[this.currentFrame].render(
+            this.renderOffset.x,
+            this.renderOffset.y
+        );
 
+        // Arm
         context.rotate(this.armAngle);
         this.armSprite.render(this.armOffset.x, this.armOffset.y);
 
         context.scale(1 / this.scale, 1 / this.scale);
+
+        // Gun
         if (this.gun) {
             context.rotate(Math.PI / 2);
             this.gun.render(this.gunOffset.x, this.gunOffset.y);
         }
 
         context.restore();
+
+        if (this.stateMachine.currentState.explosionFrame) 
+        { 
+            const explosionState = this.stateMachine.currentState;
+            this.sprites[explosionState.explosionFrame]
+            .render(this.body.position.x - 40, this.body.position.y + this.renderOffset.y,
+                { x: 2, y: 2 }
+            ); 
+        }
     }
 
     setGun(gun) {
         this.gun = gun;
     }
 
-    destroy() {
-        this.isAlive = false;
-    }
+    isDead() {
+        if (!this.isAlive) return true;
 
-    isDead(){
-        return this.body.position.y > CANVAS_HEIGHT/2 + 30;
+        return this.body.position.y > CANVAS_HEIGHT / 2 + 30;
     }
 
     tilt(dt) {
@@ -218,6 +240,7 @@ export default class Character extends Rectangle {
      * @param {number} y The y coordinate of the new position.
      */
     respawn(x, y) {
+        this.changeState(PlayerStateName.Idling);
         this.isAlive = true;
         
         // Reset body position, velocity, and angle

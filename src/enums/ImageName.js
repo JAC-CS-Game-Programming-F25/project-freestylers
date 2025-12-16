@@ -14,7 +14,8 @@ const ImageName = {
   WeightBoost: 'weight-boost',
   Shrinker: 'shrinker',
   ShotEffect: 'shot-effect',
-  LaserEffect: 'laser-effect'
+  LaserEffect: 'laser-effect',
+  Explosion: 'explosion'
 };
 
 export default ImageName;
