@@ -5,6 +5,7 @@ const GameStateName = {
 	TitleScreen: 'title-screen',
 	Menu: 'menu',
 	PlayerSelect: 'player-select',
+	Pause: 'pause'
 };
 
 export default GameStateName;

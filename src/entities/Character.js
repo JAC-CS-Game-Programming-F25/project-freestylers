@@ -1,6 +1,7 @@
 import StateMachine from '../../lib/StateMachine.js';
 import PlayerStateName from '../enums/PlayerStateName.js';
-import { CANVAS_HEIGHT, context, matter } from '../globals.js';
+import SoundName from '../enums/SoundName.js';
+import { CANVAS_HEIGHT, context, matter, sounds } from '../globals.js';
 import PlayerExplodingState from '../states/player/PlayerExplodingState.js';
 import PlayerIdlingState from '../states/player/PlayerIdlingState.js';
 import PlayerJumpingState from '../states/player/PlayerJumpingState.js';
@@ -14,7 +15,7 @@ export default class Character extends Rectangle {
     static JUMP_POWER = 0.02;
     static DENSITY = 0.002;
     
-    constructor(x, y, sprites, armSprite, flipped, playState) {
+    constructor(x, y, sprites, armSprite, flipped, playState, isAI) {
 		super(
 			x - Character.WIDTH / 2,
 			y - Character.HEIGHT / 2,
@@ -27,6 +28,8 @@ export default class Character extends Rectangle {
 				label: 'character',
 			}
 		);
+
+        this.isAI = isAI;
         
         this.hitFlashTime = 0;
         this.HIT_FLASH_DURATION = 0.12;
@@ -285,5 +288,6 @@ export default class Character extends Rectangle {
 
     handleHit() {
         this.hitFlashTime = this.HIT_FLASH_DURATION;
+        sounds.play(SoundName.Damage);
     }
 }

@@ -4,7 +4,9 @@ const SoundName = {
 	EpicBackgroundMusic: 'epic_background-music',
 	LaserShot: 'laser-shot',
 	FunkyMusic: 'funky-music',
-	BazookaShot: 'bazooka-shot'
+	BazookaShot: 'bazooka-shot',
+	AKShot: 'ak-shot',
+	Damage: 'damage'
 };
 
 export default SoundName

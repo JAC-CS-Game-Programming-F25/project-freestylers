@@ -28,6 +28,7 @@ import TitleScreenState from './states/TitleScreenState.js';
 import PlayerSelectState from './states/PlayerSelectState.js';
 import MenuState from './states/MenuState.js';
 import Persistence from './services/Persistence.js';
+import PauseState from './states/PauseState.js';
 
 // Set the dimensions of the play area.
 canvas.width = CANVAS_WIDTH;
@@ -55,6 +56,7 @@ stateMachine.add(GameStateName.TitleScreen, new TitleScreenState());
 stateMachine.add(GameStateName.GameOver, new GameOverState());
 stateMachine.add(GameStateName.Victory, new VictoryState());
 stateMachine.add(GameStateName.Play, new PlayState());
+stateMachine.add(GameStateName.Pause, new PauseState());
 stateMachine.add(GameStateName.PlayerSelect, new PlayerSelectState());
 
 const saved = Persistence.loadCurrentState();

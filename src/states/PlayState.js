@@ -23,14 +23,16 @@
             this.bullets = [];
             this.winner = null;
             this.scoredthisRound = false;
+            this.pauseHovered = false;
+            this.pauseButtonSize = 40;
         }
 
         async enter() {
-            this.clearBodies();
-            this.generateObstacle();
+            this.resetRound();
             const savedInfo = Persistence.loadGameInfo();
             this.player1Score = savedInfo.player1Score || 0;
             this.player2Score = savedInfo.player2Score || 0;
+            this.playerCount = savedInfo.playerCount;
 
             sounds.stop(SoundName.FunkyMusic);
             engine.world.gravity.x = 0;
@@ -47,9 +49,8 @@
             this.map = new TiledMap(mapData);
             await this.map.preloadTiles();
             
-            this.player1 = CharacterFactory.createCharacter(150, 130, false, this);
-            this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, true, this);
-
+            this.player1 = CharacterFactory.createCharacter(150, 130, false, this, false);
+            this.player2 = CharacterFactory.createCharacter(CANVAS_WIDTH - 150, 125, true, this, this.playerCount === 1);
 
             const savedGunType = savedInfo.gunType || '';
             const [gun1, gun2] = GunFactory.createGunForBothPlayers(this.player1, this.player2, savedGunType);
@@ -62,6 +63,10 @@
             // Set up collision detection for bullets hitting characters
             this.setupCollisionDetection();
             this.generatePowerUp();
+
+            const canvas = document.querySelector('canvas');
+            canvas.addEventListener('click', this.handleClick.bind(this));
+            canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
         }
         
         setupCollisionDetection() {
@@ -125,11 +130,43 @@
             });
         }
 
+        exit() {
+            const canvas = document.querySelector('canvas');
+            canvas.removeEventListener('click', this.handleClick.bind(this));
+            canvas.removeEventListener('mousemove', this.handleMouseMove.bind(this));
+        }
+
+        getMousePos(event) {
+            const rect = event.target.getBoundingClientRect();
+            return {
+                x: (event.clientX - rect.left) * (CANVAS_WIDTH / rect.width),
+                y: (event.clientY - rect.top) * (CANVAS_HEIGHT / rect.height),
+            };
+        }
+
+        handleMouseMove(event) {
+            const { x, y } = this.getMousePos(event);
+
+            this.pauseHovered =
+                x > 10 &&
+                x < 10 + this.pauseButtonSize &&
+                y > 10 &&
+                y < 10 + this.pauseButtonSize;
+        }
+
+        handleClick(event) {
+            const { x, y } = this.getMousePos(event);
+
+            if (this.pauseHovered) {
+                stateMachine.change(GameStateName.Pause, { player1Score: this.player1Score, player2Score: this.player2Score});
+            }
+        }
+
         
         applyKnockback(character, bullet) {
             if (!character || !character.isAlive) return;
 
-            if (bullet.shooter.gun.type === 'ak') {
+            if (bullet.shooter.gun.type === 'bazooka') {
                 character.handleExplosion();
                 return;
             }
@@ -222,6 +259,19 @@
             for (const bullet of this.bullets) bullet.render()
 
             renderScore(this.player1Score, this.player2Score);
+            this.renderPauseButton();
+        }
+
+        renderPauseButton() {
+            // Draw || symbol for pause
+            context.strokeStyle = 'black';
+            context.lineWidth = 4;
+            context.beginPath();
+            context.moveTo(20, 15);
+            context.lineTo(20, 35);
+            context.moveTo(30, 15);
+            context.lineTo(30, 35);
+            context.stroke();
         }
 
         addBullets(bullets) {
@@ -285,30 +335,32 @@
             this.obstacles = [];
 
             // Respawn players
-            this.player1.respawn(150, 130);
-            this.player2.respawn(CANVAS_WIDTH - 150, 130);
+            if (this.player1 && this.player2) {
+                this.player1.respawn(150, 130);
+                this.player2.respawn(CANVAS_WIDTH - 150, 130);
 
-            // Reset guns
-            const savedInfo = Persistence.loadGameInfo();
-            const savedGunType = savedInfo.gunType || '';
+                // Reset guns
+                const savedInfo = Persistence.loadGameInfo();
+                const savedGunType = savedInfo.gunType || '';
 
-            const [gun1, gun2] = GunFactory.createGunForBothPlayers(
-                this.player1, 
-                this.player2, 
-                savedGunType, 
-                true
-            );
+                const [gun1, gun2] = GunFactory.createGunForBothPlayers(
+                    this.player1, 
+                    this.player2, 
+                    savedGunType, 
+                    true
+                );
 
-            this.player1.setGun(gun1);
-            this.player2.setGun(gun2);
+                this.player1.setGun(gun1);
+                this.player2.setGun(gun2);
 
-            Persistence.saveGameInfo({ gunType: gun1.type });
+                Persistence.saveGameInfo({ gunType: gun1.type });
 
-            // Reset velocities
-            matter.Body.setVelocity(this.player1.body, { x: 0, y: 0 });
-            matter.Body.setVelocity(this.player2.body, { x: 0, y: 0 });
+                // Reset velocities
+                matter.Body.setVelocity(this.player1.body, { x: 0, y: 0 });
+                matter.Body.setVelocity(this.player2.body, { x: 0, y: 0 });
 
-            this.scoredthisRound = false;
+                this.scoredthisRound = false;
+            }
         }
 
         clearBodies() {

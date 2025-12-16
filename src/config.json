@@ -95,7 +95,7 @@
 		"path": "./assets/images/Effects/explosion.png",
 		"width": 248,
 		"height": 24
-  },
+  	},{
 		"name": "bazooka",
 		"path": "./assets/images/Guns/bazooka.png",
 		"width": 27,
@@ -107,7 +107,6 @@
 		"width": 27,
 		"height": 16
 	}
-
 
 ],
 	"fonts": [
@@ -161,6 +160,14 @@
 		{
 			"name": "ak-shot",
 			"path": "./assets/sounds/ak.wav",
+			"size": 1,
+			"volume": 0.5,
+			"playbackRate": 1.5,
+			"loop": false
+		},
+		{
+			"name": "damage",
+			"path": "./assets/sounds/damage.wav",
 			"size": 1,
 			"volume": 0.5,
 			"playbackRate": 1.5,

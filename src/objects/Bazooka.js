@@ -6,13 +6,14 @@ import { sounds } from "../globals.js";
 import SoundName from "../enums/SoundName.js";
 export default class Bazooka extends Gun {
     constructor(character) {
-        super(character, ImageName.Bazooka , 14, 10);
+        super(character, ImageName.Bazooka, 14, 10);
         // Handle both raw images and objects with .image property
         this.bulletSprite = images.get(ImageName.BazookaBullet);
         this.bulletWidth = 10;
         this.bulletHeight = 10;
-        this.bulletSpeed = 1;// Very high speed for laser
-        this.type = 'laser';
+        this.bulletSpeed = 5;
+        this.type = 'bazooka';
+        this.character.gunOffset = { x: 2, y: -12 }
     }
 
     /**

@@ -1,12 +1,13 @@
 import State from '../../lib/State.js';
 import { context, CANVAS_WIDTH, CANVAS_HEIGHT, input, stateMachine } from '../globals.js';
 import Input from '../../lib/Input.js';
+import GameStateName from '../enums/GameStateName.js';
 
+/**
+ * actually the setup state...
+ */
 export default class TitleScreenState extends State {
     constructor() {
-
-
-		
         super();
         this.bgImage = new Image();
         this.bgImage.src = './assets/images/background.png';
@@ -20,27 +21,38 @@ export default class TitleScreenState extends State {
 		this.transitioning = false; 
     }
 
-    enter() {
+	enter({ playerCount = 1 } = {}) {
 		this.player1Ready = false;
 		this.player2Ready = false;
+
+		// Save the player count so the TitleScreenState knows if 1 or 2 players are playing
+		this.playerCount = playerCount;
 	}
 
-    update(dt) {
-        if(input.isKeyHeld(Input.KEYS.SHIFT)&& input.isKeyHeld(Input.KEYS.W)){
+	update(dt) {
+		// Player 1 input
+		if (input.isKeyHeld(Input.KEYS.W)) {
 			this.player1Ready = true;
 		}
-		if(input.isKeyHeld(Input.KEYS.SPACE)&& input.isKeyHeld(Input.KEYS.ARROW_UP)){
+
+		// Player 2 input (only if 2 players)
+		if (this.playerCount === 2 && input.isKeyHeld(Input.KEYS.ENTER) && input.isKeyHeld(Input.KEYS.ARROW_UP)) {
 			this.player2Ready = true;
 		}
-		
-		if (this.player1Ready && this.player2Ready && !this.transitioning) {
-			this.transitioning = true;   // <-- prevents repeats
 
+		// Check if ready to start
+		const readyToStart = this.playerCount === 1
+			? this.player1Ready
+			: this.player1Ready && this.player2Ready;
+
+		if (readyToStart && !this.transitioning) {
+			this.transitioning = true; // prevent repeats
 			setTimeout(() => {
-				stateMachine.change('play');
+				stateMachine.change(GameStateName.Play);
 			}, 1000);
 		}
-    }
+	}
+
 
     render() {
         context.save();
@@ -54,8 +66,7 @@ export default class TitleScreenState extends State {
 		this.renderTitle();
 		this.renderInstructions();
 		this.renderCheckmarkButton(CANVAS_WIDTH * 0.25 - 60, 244, this.player1Ready);
-		this.renderCheckmarkButton(CANVAS_WIDTH * 0.75 - 60, 244, this.player2Ready);
-
+		if (this.playerCount > 1) this.renderCheckmarkButton(CANVAS_WIDTH * 0.75 - 60, 244, this.player2Ready);
     }
 
 	renderTitle() {
@@ -71,7 +82,7 @@ export default class TitleScreenState extends State {
 
 	renderPlayer1Instructions() {
 		const x = CANVAS_WIDTH * 0.25;  // left quarter of screen
-		let y = 160;
+		let y = 150;
 
 		context.textAlign = "center";
 		context.fillStyle = "white";
@@ -81,7 +92,8 @@ export default class TitleScreenState extends State {
 
 		const lines = [
 			"PLAYER 1",
-			"Hold SHIFT + W",
+			"JUMP: W, SHOOT: SPACE",
+			"Hold SPACE + W",
 			"to join the battle"
 		];
 
@@ -94,7 +106,7 @@ export default class TitleScreenState extends State {
 
 	renderPlayer2Instructions() {
 		const x = CANVAS_WIDTH * 0.75; // right quarter of screen
-		let y = 160;
+		let y = 150;
 
 		context.textAlign = "center";
 		context.fillStyle = "white";
@@ -104,7 +116,8 @@ export default class TitleScreenState extends State {
 
 		const lines = [
 			"PLAYER 2",
-			"Hold SPACE + ↑",
+			"JUMP: UP ARROW, SHOOT: ENTER",
+			"Hold ENTER + UP ARROW",
 			"to join the battle"
 		];
 
@@ -116,8 +129,14 @@ export default class TitleScreenState extends State {
 	}
 
 	renderInstructions() {
-		this.renderPlayer1Instructions();
-		this.renderPlayer2Instructions();
+		if (this.playerCount === 1) {
+			// Show instructions only for Player 1
+			this.renderPlayer1Instructions();
+		} else if (this.playerCount === 2) {
+			// Show instructions for both players
+			this.renderPlayer1Instructions();
+			this.renderPlayer2Instructions();
+		}
 	}
 
 

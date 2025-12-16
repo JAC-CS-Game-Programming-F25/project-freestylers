@@ -4,10 +4,10 @@ import Sprite from "../../lib/Sprite.js";
 import ImageName from "../enums/ImageName.js";
 
 export default class CharacterFactory {
-    static createCharacter(x, y, flipped, playState) {
+    static createCharacter(x, y, flipped, playState, isAI) {
         const characterSpriteName = flipped ? ImageName.CyborgIdle : ImageName.PunkIdle;
         const armSpriteName = flipped ? ImageName.CyborgHand : ImageName.PunkHand;
-        return new Character(x, y, CharacterFactory.getCharacterSprites(characterSpriteName), CharacterFactory.getArmSprite(armSpriteName), flipped, playState);
+        return new Character(x, y, CharacterFactory.getCharacterSprites(characterSpriteName), CharacterFactory.getArmSprite(armSpriteName), flipped, playState, isAI);
     }
 
     static getCharacterSprites(characterSpriteName) {
