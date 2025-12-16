@@ -128,6 +128,8 @@ export default class PlayState extends State {
             return;
         }
 
+        character.handleHit();
+
         const { Body } = matter;
 
         const vx = bullet.body.velocity.x;
@@ -269,7 +271,6 @@ export default class PlayState extends State {
     }
 
     resetRound() {
-        console.log('reset round')
         this.removeBodiesByLabel("bullet");
         this.removeBodiesByLabel("powerUp");
 

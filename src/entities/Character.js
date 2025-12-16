@@ -27,6 +27,9 @@ export default class Character extends Rectangle {
 				label: 'character',
 			}
 		);
+        
+        this.hitFlashTime = 0;
+        this.HIT_FLASH_DURATION = 0.12;
 
         this.stateMachine = this.initializeStateMachine();
         this.playState = playState;
@@ -78,6 +81,12 @@ export default class Character extends Rectangle {
 
     update(dt) {
         if (!this.isAlive) return;
+
+        if (this.hitFlashTime > 0) {
+            this.hitFlashTime -= dt;
+            if (this.hitFlashTime < 0) this.hitFlashTime = 0;
+        }
+
         if (this.body.position.y >= 135) {
             this.isGrounded = true;
         }
@@ -129,7 +138,6 @@ export default class Character extends Rectangle {
     }
 
     handleExplosion() {
-        console.log('exploded')
         this.changeState(PlayerStateName.Exploding);
     }
 
@@ -182,6 +190,21 @@ export default class Character extends Rectangle {
             this.renderOffset.y
         );
 
+        if (this.hitFlashTime > 0) {
+            context.save();
+            context.globalCompositeOperation = "source-atop";
+            context.fillStyle = "rgba(255, 0, 0, 0.6)";
+
+            // Cover only sprite area (local space)
+            context.fillRect(
+                this.renderOffset.x,
+                this.renderOffset.y,
+                this.width,
+                this.height
+            );
+
+            context.restore();
+        }
         // Arm
         context.rotate(this.armAngle);
         this.armSprite.render(this.armOffset.x, this.armOffset.y);
@@ -258,5 +281,9 @@ export default class Character extends Rectangle {
         this.armRaised = false;
         this.armAngle = 0;
         this.armTargetAngle = 0;
+    }
+
+    handleHit() {
+        this.hitFlashTime = this.HIT_FLASH_DURATION;
     }
 }
