@@ -132,6 +132,22 @@
 			"volume": 0.5,
 			"playbackRate": 1,
 			"loop": false
+		},
+		{
+			"name": "bazooka-shot",
+			"path": "./assets/sounds/bazooka.wav",
+			"size": 1,
+			"volume": 0.5,
+			"playbackRate": 1,
+			"loop": false
+		},
+		{
+			"name": "ak-shot",
+			"path": "./assets/sounds/ak.wav",
+			"size": 1,
+			"volume": 0.5,
+			"playbackRate": 1.5,
+			"loop": false
 		}
 	]
 }

@@ -51,16 +51,16 @@ export default class GunFactory {
         
         switch(selectedGunType) {
             case 'laser':
-                gun1 = this.createLaserGun(player1);
-                gun2 = this.createLaserGun(player2);
+                gun1 = this.createAK(player1);
+                gun2 = this.createAK(player2);
                 break;
             case 'bazooka':
                 gun1 = this.createBazooka(player1);
                 gun2 = this.createBazooka(player2);
                 break;
             default: // 'ak'
-                gun1 = this.createBazooka(player1);
-                gun2 = this.createBazooka(player2);
+                gun1 = this.createLaserGun(player1);
+                gun2 = this.createLaserGun(player2);
         }
         
         return [gun1, gun2];
