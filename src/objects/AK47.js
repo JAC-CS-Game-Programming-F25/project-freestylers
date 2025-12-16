@@ -2,6 +2,8 @@ import Gun from "./Gun.js";
 import Bullet from "../entities/Bullet.js";
 import { images } from "../globals.js";
 import ImageName from "../enums/ImageName.js";
+import { sounds } from "../globals.js";
+import SoundName from "../enums/SoundName.js";
 
 export default class AK extends Gun {
     constructor(character) {
@@ -18,6 +20,7 @@ export default class AK extends Gun {
      * Shoot three AK bullets side by side
      */
     shoot() {
+        sounds.play(SoundName.AKShot);
         const spawnPos = this.getBulletSpawnPosition();
         const velocity = this.getBulletVelocity();
 

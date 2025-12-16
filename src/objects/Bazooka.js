@@ -2,7 +2,8 @@ import Gun from "./Gun.js";
 import Bullet from "../entities/Bullet.js";
 import { images } from "../globals.js";
 import ImageName from "../enums/ImageName.js";
-
+import { sounds } from "../globals.js";
+import SoundName from "../enums/SoundName.js";
 export default class Bazooka extends Gun {
     constructor(character) {
         super(character, ImageName.Bazooka , 14, 10);
@@ -18,6 +19,7 @@ export default class Bazooka extends Gun {
      * Shoot a single laser bullet
      */
     shoot() {
+        sounds.play(SoundName.BazookaShot);
         const spawnPos = this.getBulletSpawnPosition();
         const velocity = this.getBulletVelocity();
 
