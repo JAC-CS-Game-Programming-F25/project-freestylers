@@ -105,8 +105,6 @@ export default class TiledMap {
         await Promise.all([...tilePromises, ...imageLayerPromises]);
 
         this.createCollisionBodies();
-
-        console.log(`Loaded ${tileIds.size} tiles and ${imageLayerPromises.length} image layers`);
     }
 
     createCollisionBodies() {
@@ -130,8 +128,6 @@ export default class TiledMap {
                         }
                     }
                 }
-
-                console.log(`Created ${this.collisionBodies.length} collision bodies`);
             }
         }
     }

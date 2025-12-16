@@ -13,7 +13,6 @@ export default class JumpBoost extends PowerUp {
         player.jumpPower *= 2;
         this.addTask(() => {
             player.jumpPower /= 2;
-            console.log('done')
             player.glow = false;
         })
     }

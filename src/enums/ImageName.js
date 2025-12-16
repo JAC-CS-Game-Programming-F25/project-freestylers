@@ -13,8 +13,11 @@ const ImageName = {
   JumpBoost: 'jump-boost',
   WeightBoost: 'weight-boost',
   Shrinker: 'shrinker',
+  ShotEffect: 'shot-effect',
+  LaserEffect: 'laser-effect',
+  Explosion: 'explosion',
   Bazooka: 'bazooka',
-  BazookaBullet: 'bazooka-bullet',
+  BazookaBullet: 'bazooka-bullet'
 };
 
 export default ImageName;

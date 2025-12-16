@@ -18,7 +18,6 @@ export default class GunFactory {
     static createLaserGun(character) {
         return new LaserGun(character);
     }
-
     /**
      * Create a Bazooka for a character
      * @param {Character} character - The character who will hold this gun

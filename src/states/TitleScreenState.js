@@ -28,21 +28,18 @@ export default class TitleScreenState extends State {
     update(dt) {
         if(input.isKeyHeld(Input.KEYS.SHIFT)&& input.isKeyHeld(Input.KEYS.W)){
 			this.player1Ready = true;
-			console.log("Player 1 ready");
 		}
 		if(input.isKeyHeld(Input.KEYS.SPACE)&& input.isKeyHeld(Input.KEYS.ARROW_UP)){
 			this.player2Ready = true;
-			console.log("Player 2 ready");
 		}
 		
 		if (this.player1Ready && this.player2Ready && !this.transitioning) {
-    console.log("Both players ready");
-    this.transitioning = true;   // <-- prevents repeats
+			this.transitioning = true;   // <-- prevents repeats
 
-    setTimeout(() => {
-        stateMachine.change('play');
-    }, 1000);
-}
+			setTimeout(() => {
+				stateMachine.change('play');
+			}, 1000);
+		}
     }
 
     render() {

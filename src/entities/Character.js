@@ -1,6 +1,7 @@
 import StateMachine from '../../lib/StateMachine.js';
 import PlayerStateName from '../enums/PlayerStateName.js';
 import { CANVAS_HEIGHT, context, matter } from '../globals.js';
+import PlayerExplodingState from '../states/player/PlayerExplodingState.js';
 import PlayerIdlingState from '../states/player/PlayerIdlingState.js';
 import PlayerJumpingState from '../states/player/PlayerJumpingState.js';
 import Rectangle from './Rectangle.js';
@@ -10,7 +11,7 @@ export default class Character extends Rectangle {
 	static WIDTH = 16;
     static HEIGHT = 36;
     static MAX_TILT = 0.35;
-    static JUMP_POWER = 0.03;
+    static JUMP_POWER = 0.02;
     static DENSITY = 0.002;
     
     constructor(x, y, sprites, armSprite, flipped, playState) {
@@ -26,6 +27,9 @@ export default class Character extends Rectangle {
 				label: 'character',
 			}
 		);
+        
+        this.hitFlashTime = 0;
+        this.HIT_FLASH_DURATION = 0.12;
 
         this.stateMachine = this.initializeStateMachine();
         this.playState = playState;
@@ -52,7 +56,7 @@ export default class Character extends Rectangle {
 		this.armSpeed = 0.02;
 
         this.armOffset = { x: 1, y: -5 };
-        this.gunOffset = { x: -2, y: -9 }
+        this.gunOffset = { x: -2, y: -15 }
 
         this.isGrounded = true;
         this.currentAnimation =
@@ -64,6 +68,7 @@ export default class Character extends Rectangle {
 
 		stateMachine.add(PlayerStateName.Idling, new PlayerIdlingState(this));
 		stateMachine.add(PlayerStateName.Jumping, new PlayerJumpingState(this));
+        stateMachine.add(PlayerStateName.Exploding, new PlayerExplodingState(this));
 
 		stateMachine.change(PlayerStateName.Idling);
 
@@ -76,6 +81,12 @@ export default class Character extends Rectangle {
 
     update(dt) {
         if (!this.isAlive) return;
+
+        if (this.hitFlashTime > 0) {
+            this.hitFlashTime -= dt;
+            if (this.hitFlashTime < 0) this.hitFlashTime = 0;
+        }
+
         if (this.body.position.y >= 135) {
             this.isGrounded = true;
         }
@@ -126,6 +137,10 @@ export default class Character extends Rectangle {
         this.playState.addBullets(shots);
     }
 
+    handleExplosion() {
+        this.changeState(PlayerStateName.Exploding);
+    }
+
     jump() {
         if (!this.isGrounded) {
             return;
@@ -169,30 +184,59 @@ export default class Character extends Rectangle {
 
         context.scale(this.scale, this.scale);
 
-        this.sprites[this.currentFrame].render(this.renderOffset.x, this.renderOffset.y);
+        // Body
+        this.sprites[this.currentFrame].render(
+            this.renderOffset.x,
+            this.renderOffset.y
+        );
 
+        if (this.hitFlashTime > 0) {
+            context.save();
+            context.globalCompositeOperation = "source-atop";
+            context.fillStyle = "rgba(255, 0, 0, 0.6)";
+
+            // Cover only sprite area (local space)
+            context.fillRect(
+                this.renderOffset.x,
+                this.renderOffset.y,
+                this.width,
+                this.height
+            );
+
+            context.restore();
+        }
+        // Arm
         context.rotate(this.armAngle);
         this.armSprite.render(this.armOffset.x, this.armOffset.y);
 
         context.scale(1 / this.scale, 1 / this.scale);
+
+        // Gun
         if (this.gun) {
             context.rotate(Math.PI / 2);
-            this.gun.sprite.render(this.gunOffset.x, this.gunOffset.y);
+            this.gun.render(context, this.gunOffset.x, this.gunOffset.y);
         }
 
         context.restore();
+
+        if (this.stateMachine.currentState.explosionFrame) 
+        { 
+            const explosionState = this.stateMachine.currentState;
+            this.sprites[explosionState.explosionFrame]
+            .render(this.body.position.x - 40, this.body.position.y + this.renderOffset.y,
+                { x: 2, y: 2 }
+            ); 
+        }
     }
 
     setGun(gun) {
         this.gun = gun;
     }
 
-    destroy() {
-        this.isAlive = false;
-    }
+    isDead() {
+        if (!this.isAlive) return true;
 
-    isDead(){
-        return this.body.position.y > CANVAS_HEIGHT/2 + 30;
+        return this.body.position.y > CANVAS_HEIGHT / 2 + 30;
     }
 
     tilt(dt) {
@@ -218,6 +262,7 @@ export default class Character extends Rectangle {
      * @param {number} y The y coordinate of the new position.
      */
     respawn(x, y) {
+        this.changeState(PlayerStateName.Idling);
         this.isAlive = true;
         
         // Reset body position, velocity, and angle
@@ -236,5 +281,9 @@ export default class Character extends Rectangle {
         this.armRaised = false;
         this.armAngle = 0;
         this.armTargetAngle = 0;
+    }
+
+    handleHit() {
+        this.hitFlashTime = this.HIT_FLASH_DURATION;
     }
 }

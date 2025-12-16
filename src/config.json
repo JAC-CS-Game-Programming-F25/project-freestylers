@@ -79,6 +79,23 @@
 		"height": 32
 	},
 	{
+		"name": "shot-effect",
+		"path": "./assets/images/Effects/shot-effect.png",
+		"width": 288,
+		"height": 48
+	},
+	{
+		"name": "laser-effect",
+		"path": "./assets/images/Effects/laser-effect.png",
+		"width": 288,
+		"height": 48
+	},
+	{
+		"name": "explosion",
+		"path": "./assets/images/Effects/explosion.png",
+		"width": 248,
+		"height": 24
+  },
 		"name": "bazooka",
 		"path": "./assets/images/Guns/bazooka.png",
 		"width": 27,
