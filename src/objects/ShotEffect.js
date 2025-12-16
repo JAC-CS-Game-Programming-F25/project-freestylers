@@ -22,7 +22,6 @@ export default class ShotEffect {
         if (this.done) {
             return;
         }
-        console.log(this.currentFrame);
         this.sprites[this.currentFrame].render(x, y);
     }
 }

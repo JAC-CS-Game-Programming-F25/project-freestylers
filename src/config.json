@@ -83,6 +83,12 @@
 		"path": "./assets/images/Effects/shot-effect.png",
 		"width": 288,
 		"height": 48
+	},
+	{
+		"name": "laser-effect",
+		"path": "./assets/images/Effects/laser-effect.png",
+		"width": 288,
+		"height": 48
 	}
 ],
 	"fonts": [

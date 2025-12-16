@@ -56,7 +56,6 @@ export default class PlayState extends State {
         this.player1.setGun(gun1);
         this.player2.setGun(gun2);
 
-        // Save gun type for future persistence
         Persistence.saveGameInfo({ gunType: gun1.type });
         
         // Set up collision detection for bullets hitting characters
@@ -219,7 +218,6 @@ export default class PlayState extends State {
     }
 
     generateObstacle(){
-        console.log("generateObstacle called");
         const x = Math.random() * CANVAS_WIDTH;
         const y = -80;
 
@@ -230,7 +228,6 @@ export default class PlayState extends State {
     }
 
     generatePowerUp() {
-        console.log("generatePowerUp called");
         const x = 120 + Math.random() * (CANVAS_WIDTH - 240);
         const y = -80;
 
@@ -275,6 +272,16 @@ export default class PlayState extends State {
 
         this.player1.respawn(150, 130);
         this.player2.respawn(CANVAS_WIDTH - 150, 130);
+
+        const savedInfo = Persistence.loadGameInfo();
+        const savedGunType = savedInfo.gunType || '';
+
+        const [gun1, gun2] = GunFactory.createGunForBothPlayers(this.player1, this.player2, savedGunType, true);
+
+        this.player1.setGun(gun1);
+        this.player2.setGun(gun2);
+
+        Persistence.saveGameInfo({ gunType: gun1.type });
 
         matter.Body.setVelocity(this.player1.body, { x: 0, y: 0 });
         matter.Body.setVelocity(this.player2.body, { x: 0, y: 0 });

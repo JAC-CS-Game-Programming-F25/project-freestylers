@@ -2,6 +2,7 @@ import Gun from "./Gun.js";
 import Bullet from "../entities/Bullet.js";
 import { images } from "../globals.js";
 import ImageName from "../enums/ImageName.js";
+import Sprite from "../../lib/Sprite.js";
 
 export default class LaserGun extends Gun {
     constructor(character) {
@@ -12,6 +13,7 @@ export default class LaserGun extends Gun {
         this.bulletHeight = 10;
         this.bulletSpeed = 20; // Very high speed for laser
         this.type = 'laser';
+        this.character.gunOffset = { x: 2, y: -15 }
     }
 
     /**
@@ -36,5 +38,15 @@ export default class LaserGun extends Gun {
 
         return [bullet];
     }
+
+    getShotEffectSprites() {
+		return [
+			new Sprite( images.get(ImageName.LaserEffect), 0, 12, 48, 48 ),
+			new Sprite( images.get(ImageName.LaserEffect), 48, 12, 48, 48 ),
+			new Sprite( images.get(ImageName.LaserEffect), 96, 12, 48, 48 ),
+			new Sprite( images.get(ImageName.LaserEffect), 192, 12, 48, 48 ),
+			new Sprite( images.get(ImageName.LaserEffect), 240, 12, 48, 48 )
+		];
+	}
 
 }
