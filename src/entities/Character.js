@@ -1,6 +1,7 @@
 import StateMachine from '../../lib/StateMachine.js';
 import PlayerStateName from '../enums/PlayerStateName.js';
-import { CANVAS_HEIGHT, context, matter } from '../globals.js';
+import SoundName from '../enums/SoundName.js';
+import { CANVAS_HEIGHT, context, matter, sounds } from '../globals.js';
 import PlayerExplodingState from '../states/player/PlayerExplodingState.js';
 import PlayerIdlingState from '../states/player/PlayerIdlingState.js';
 import PlayerJumpingState from '../states/player/PlayerJumpingState.js';
@@ -285,5 +286,6 @@ export default class Character extends Rectangle {
 
     handleHit() {
         this.hitFlashTime = this.HIT_FLASH_DURATION;
+        sounds.play(SoundName.Damage);
     }
 }

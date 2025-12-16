@@ -27,7 +27,6 @@
 
         async enter() {
             this.clearBodies();
-            this.generateObstacle();
             const savedInfo = Persistence.loadGameInfo();
             this.player1Score = savedInfo.player1Score || 0;
             this.player2Score = savedInfo.player2Score || 0;
@@ -129,7 +128,7 @@
         applyKnockback(character, bullet) {
             if (!character || !character.isAlive) return;
 
-            if (bullet.shooter.gun.type === 'ak') {
+            if (bullet.shooter.gun.type === 'bazooka') {
                 character.handleExplosion();
                 return;
             }
