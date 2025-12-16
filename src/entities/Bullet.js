@@ -1,6 +1,6 @@
 import Rectangle from "./Rectangle.js";
 import Sprite from "../../lib/Sprite.js";
-import { matter, CANVAS_WIDTH, CANVAS_HEIGHT } from "../globals.js";
+import { matter, CANVAS_WIDTH, CANVAS_HEIGHT, images } from "../globals.js";
 
 const { Body } = matter;
 
@@ -20,6 +20,8 @@ export default class Bullet extends Rectangle {
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
 		this.shooter = shooter;
+		this.spriteImage = spriteImage;
+		
 
 		this.currentFrame = 0;
 		this.sprites = [
@@ -65,5 +67,9 @@ export default class Bullet extends Rectangle {
 
 	onCollision(otherBody) {
 		this.shouldCleanUp = true;
+	}
+
+	render() {
+		super.render();
 	}
 }

@@ -77,6 +77,12 @@
 		"path": "./assets/images/PowerUps/shrinker.png",
 		"width": 21,
 		"height": 32
+	},
+	{
+		"name": "shot-effect",
+		"path": "./assets/images/Effects/shot-effect.png",
+		"width": 288,
+		"height": 48
 	}
 ],
 	"fonts": [

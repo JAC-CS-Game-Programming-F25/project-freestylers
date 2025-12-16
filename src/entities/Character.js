@@ -52,7 +52,7 @@ export default class Character extends Rectangle {
 		this.armSpeed = 0.02;
 
         this.armOffset = { x: 1, y: -5 };
-        this.gunOffset = { x: -2, y: -9 }
+        this.gunOffset = { x: -2, y: -15 }
 
         this.isGrounded = true;
         this.currentAnimation =
@@ -178,6 +178,7 @@ export default class Character extends Rectangle {
         if (this.gun) {
             context.rotate(Math.PI / 2);
             this.gun.sprite.render(this.gunOffset.x, this.gunOffset.y);
+            this.gun.render();
         }
 
         context.restore();

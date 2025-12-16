@@ -12,7 +12,8 @@ const ImageName = {
   AKBullet: 'ak-bullet',
   JumpBoost: 'jump-boost',
   WeightBoost: 'weight-boost',
-  Shrinker: 'shrinker'
+  Shrinker: 'shrinker',
+  ShotEffect: 'shot-effect'
 };
 
 export default ImageName;

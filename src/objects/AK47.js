@@ -18,6 +18,7 @@ export default class AK extends Gun {
      * Shoot three AK bullets side by side
      */
     shoot() {
+        super.shoot();
         const spawnPos = this.getBulletSpawnPosition();
         const velocity = this.getBulletVelocity();
 

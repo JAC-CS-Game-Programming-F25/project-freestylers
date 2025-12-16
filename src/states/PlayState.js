@@ -141,13 +141,11 @@ export default class PlayState extends State {
 
         const bulletMass = bullet.body.mass;
         const characterMass = character.body.mass;
-        const density = character.body.density; // ~0.002–0.01
+        const density = character.body.density;
 
-        // ---- TUNING ----
-        const BASE_KNOCKBACK = 0.8;      // << important
-        const DENSITY_FACTOR = 60;       // higher = more resistance
+        const BASE_KNOCKBACK = 0.8;
+        const DENSITY_FACTOR = 60;
 
-        // Density resistance (clamped so it never kills movement)
         const resistance = 1 + density * DENSITY_FACTOR;
 
         const impulseX =
@@ -168,8 +166,6 @@ export default class PlayState extends State {
             x: current.x + impulseX,
             y: current.y + impulseY * 0.3
         });
-
-        console.log('density:', density, 'resistance:', resistance, 'impulseX:', impulseX);
     }
 
    update(dt) {

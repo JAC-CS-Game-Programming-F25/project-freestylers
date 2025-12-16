@@ -1,8 +1,10 @@
 import Sprite from "../../lib/Sprite.js";
 import { images } from "../globals.js";
+import ShotEffect from "./ShotEffect.js";
+import ImageName from "../enums/ImageName.js";
 
 export default class Gun {
-    static GUN_BARREL_OFFSET = 10;
+    static GUN_BARREL_OFFSET = { x: 20, y: -25 };
 
     /**
      * Base Gun class that all gun types inherit from
@@ -15,7 +17,7 @@ export default class Gun {
         this.character = character;
         this.width = width;
         this.height = height;
-        this.sprite = new Sprite(images.get(imageName), 0, 0, width, height) 
+        this.sprite = new Sprite(images.get(imageName), 0, 0, width, height);
     }
 
     /**
@@ -23,8 +25,8 @@ export default class Gun {
      * @returns {{x: number, y: number}} World coordinates of bullet spawn point
      */
     getBulletSpawnPosition() {
-        const x = this.character.body.position.x + (Gun.GUN_BARREL_OFFSET * this.character.direction);
-        const y = this.character.body.position.y;
+        const x = this.character.body.position.x + (Gun.GUN_BARREL_OFFSET.x * this.character.direction);
+        const y = this.character.body.position.y + (Gun.GUN_BARREL_OFFSET.y / 2);
         
         return { x, y };
     }
@@ -37,8 +39,9 @@ export default class Gun {
     }
 
     update(dt) {
-        
-    }    
+        if (this.shotEffect) this.shotEffect.update(dt);
+        if (this.shotEffect && this.shotEffect.done) this.shotEffect = null;
+    }
 
     /**
      * Get the angle the gun is pointing in world space
@@ -51,6 +54,20 @@ export default class Gun {
     /**
      */
     shoot() {
-        console.warn('Gun.shoot() called but not implemented. Override this method in subclass.');
+        this.shotEffect = new ShotEffect(this.getShotEffectSprites());
     }
+
+    render() {
+        if (this.shotEffect) this.shotEffect.render(Gun.GUN_BARREL_OFFSET.x, Gun.GUN_BARREL_OFFSET.y);
+    }
+
+    getShotEffectSprites() {
+		return [
+			new Sprite( images.get(ImageName.ShotEffect), 0, 12, 48, 48 ),
+			new Sprite( images.get(ImageName.ShotEffect), 48, 12, 48, 48 ),
+			new Sprite( images.get(ImageName.ShotEffect), 96, 12, 48, 48 ),
+			new Sprite( images.get(ImageName.ShotEffect), 192, 12, 48, 48 ),
+			new Sprite( images.get(ImageName.ShotEffect), 240, 12, 48, 48 )
+		];
+	}
 }

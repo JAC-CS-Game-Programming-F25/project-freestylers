@@ -18,6 +18,7 @@ export default class LaserGun extends Gun {
      * Shoot a single laser bullet
      */
     shoot() {
+        super.shoot();
         const spawnPos = this.getBulletSpawnPosition();
         const velocity = this.getBulletVelocity();
 
