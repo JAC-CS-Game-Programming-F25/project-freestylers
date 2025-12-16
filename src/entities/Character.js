@@ -166,7 +166,6 @@ export default class Character extends Rectangle {
     render() {
         if (!this.isAlive) return;
 
-        // ---------- Character ----------
         context.save();
         context.translate(this.body.position.x, this.body.position.y);
         context.rotate(this.body.angle);
@@ -192,7 +191,7 @@ export default class Character extends Rectangle {
         // Gun
         if (this.gun) {
             context.rotate(Math.PI / 2);
-            this.gun.render(this.gunOffset.x, this.gunOffset.y);
+            this.gun.render(context, this.gunOffset.x, this.gunOffset.y);
         }
 
         context.restore();

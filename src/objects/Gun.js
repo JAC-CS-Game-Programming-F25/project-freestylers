@@ -1,5 +1,5 @@
 import Sprite from "../../lib/Sprite.js";
-import { images } from "../globals.js";
+import { images, context } from "../globals.js";
 import ShotEffect from "./ShotEffect.js";
 import ImageName from "../enums/ImageName.js";
 
@@ -57,9 +57,35 @@ export default class Gun {
         this.shotEffect = new ShotEffect(this.getShotEffectSprites());
     }
 
-    render(x, y) {
+    render(ctx, x, y) {
         this.sprite.render(x, y);
-        if (this.shotEffect) this.shotEffect.render(Gun.GUN_BARREL_OFFSET.x, Gun.GUN_BARREL_OFFSET.y);
+
+        if (this.shotEffect) {
+            this.shotEffect.render(
+                Gun.GUN_BARREL_OFFSET.x,
+                Gun.GUN_BARREL_OFFSET.y
+            );
+        }
+        if (this.character.armRaised) this.renderAimLine(ctx);
+    }
+
+
+    renderAimLine(ctx, length = 800) {
+        const startX = 0;
+        const startY = Gun.GUN_BARREL_OFFSET.y / 2;
+
+        ctx.save();
+
+        ctx.strokeStyle = "rgba(255,255,255,0.4)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(length, startY);
+        ctx.stroke();
+
+        ctx.restore();
     }
 
     getShotEffectSprites() {
